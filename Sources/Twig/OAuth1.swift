@@ -18,7 +18,12 @@ func oAuth1Signature(
         "\(method)"
         + "&\(url.addingPercentEncoding(withAllowedCharacters: .twitter)!)"
         + "&\(parameters.parameterString().addingPercentEncoding(withAllowedCharacters: .twitter)!)"
-    ).sha1(with: key)
+    ).sha1(with: key + "&")
+    /**
+     > ...where the token secret is not yet known ... the signing key should consist of
+     > the percent encoded consumer secret followed by an ampersand character ‘&’.
+     – https://developer.twitter.com/en/docs/authentication/oauth-1-0a/creating-a-signature
+     */
 }
 
 internal extension Dictionary where Key == String, Value == String {
