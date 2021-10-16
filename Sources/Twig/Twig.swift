@@ -20,20 +20,54 @@ public enum HTTPMethod: String {
 }
 
 public func requestToken() async throws -> [String: Any]? {
-    guard let url = URL(string: "https://api.twitter.com/oauth/request_token") else {
+    let requestURL = "https://api.twitter.com/oauth/request_token"
+    guard let url = URL(string: requestURL) else {
         throw TwigError.invalidURL
     }
     
     var request = URLRequest(url: url)
+    
+    /// Parameters for an authorization request.
+    /// Docs: https://developer.twitter.com/en/docs/authentication/oauth-1-0a/authorizing-a-request
+    var parameters: [String: String] = [
+        "oauth_consumer_key": Keys.consumer,
+        "oauth_nonce": UUID().uuidString.replacingOccurrences(of: "-", with: ""),
+        "oauth_signature_method": "HMAC-SHA1",
+        "oauth_timestamp": "\(Int(Date().timeIntervalSince1970))",
+        "oauth_version": "1.0",
+    ]
+    
+    let signature = oAuth1Signature(url: requestURL, parameters: parameters, key: Keys.consumer_secret)
+    parameters["oauth_signature"] = signature   
+    
+    print(parameters)
+    
     request.httpMethod = HTTPMethod.POST.rawValue
+    request.setHeaders([
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": "OAuth \(parameters.headerString())",
+        "oauth_callback": "twittersignin%3A%2F%2F",
+        "oauth_consumer_key": Keys.consumer,
+    ])
+    
+    print(request.allHTTPHeaderFields)
+    
     
     let (data, response): (Data, URLResponse) = try await URLSession.shared.data(for: request, delegate: nil)
     
     let serial: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
     
-    queryTest()
+    headerTest()
     
     return serial
+}
+
+extension URLRequest {
+    mutating func setHeaders(_ dict: [String: String]) -> Void {
+        for (key, value) in dict {
+            setValue(value, forHTTPHeaderField: key)
+        }
+    }
 }
 
 func queryTest() -> Void {
@@ -66,92 +100,24 @@ func queryTest() -> Void {
     print(sig)
 }
 
-func oAuth1Signature(
-    method: String = HTTPMethod.POST.rawValue,
-    url: String,
-    parameters: [String: String],
-    key: String
-) -> String {
-    (
-        "\(method)"
-        + "&\(url.addingPercentEncoding(withAllowedCharacters: .twitter)!)"
-        + "&\(parameters.parameterString().addingPercentEncoding(withAllowedCharacters: .twitter)!)"
-    ).sha1(with: key)
-}
-
-struct OAuth1Signature {
-    
-    let method: String
-    let url: String
-    let parameters: [String: String]
-    
-    init(
-        method: String = HTTPMethod.POST.rawValue,
-        url: String,
-        parameters: [String: String]
-    ) {
-        self.method = method
-        self.url = url
-        self.parameters = parameters
-    }
-    
-    /// As described in
-    /// Docs: https://developer.twitter.com/en/docs/authentication/oauth-1-0a/creating-a-signature
-    var base: String {
-        "\(method)"
-        + "&\(url.addingPercentEncoding(withAllowedCharacters: .twitter)!)"
-        + "&\(parameters.parameterString().addingPercentEncoding(withAllowedCharacters: .twitter)!)"
-    }
-    
-    func signed(with key: String) -> String {
-        base.sha1(with: key)
-    }
-}
-
-extension CharacterSet {
-    /// Allowed Characters.
-    /// Docs: https://developer.twitter.com/en/docs/authentication/oauth-1-0a/percent-encoding-parameters
-    static let twitter: CharacterSet = {
-        CharacterSet.alphanumerics.union(["-", ".", "_", "~"])
-    }()
+func headerTest() -> Void {
+    let example = [
+        "oauth_consumer_key": "xvz1evFS4wEEPTGEFPHBog",
+        "oauth_nonce": "kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg",
+        "oauth_signature": "tnnArxj06cWHq44gCs1OSKk%2FjLY%3D",
+        "oauth_signature_method": "HMAC-SHA1",
+        "oauth_timestamp": "1318622958",
+        "oauth_token": "370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb",
+        "oauth_version": "1.0"
+    ]
 }
 
 internal extension Dictionary where Key == String, Value == String {
-    func parameterString() -> String {
+    /// Header string as described in
+    /// Docs: https://developer.twitter.com/en/docs/authentication/oauth-1-0a/authorizing-a-request
+    func headerString() -> String {
         self
-            .unsafePercentEncoded()
-            .keySorted()
-            .parameterString()
-    }
-    
-    /// - Note: this uses a force unwrap, only use values where `addingPercentEncoding` will succeed.
-    func unsafePercentEncoded() -> [String: String] {
-        var result = [String: String]()
-        for (key, value) in self {
-            /// Permit `urlQueryAllowed` characters, from: https://developer.apple.com/documentation/foundation/nscharacterset/1416698-urlqueryallowed
-            /// - Note: this uses a force unwrap
-            let pctKey = key.addingPercentEncoding(withAllowedCharacters: .twitter)!
-            let pctValue = value.addingPercentEncoding(withAllowedCharacters: .twitter)!
-            result[pctKey] = pctValue
-        }
-        return result
-    }
-    
-    func keySorted() -> OrderedDictionary<String, String> {
-        var result = OrderedDictionary<String, String>()
-        for (key, value) in self {
-            result[key] = value
-        }
-        result.sort(by: {$0.key < $1.key})
-        return result
-    }
-}
-
-extension OrderedDictionary where Key: CustomStringConvertible, Value: CustomStringConvertible {
-    /// Encode key-value pairs as a parameter string.
-    func parameterString() -> String {
-        self
-            .map{"\($0)=\($1)"}
-            .joined(separator: "&")
+            .map { "\($0)=\"\($1.addingPercentEncoding(withAllowedCharacters: .twitter)!)\"" }
+            .joined(separator: ", ")
     }
 }
