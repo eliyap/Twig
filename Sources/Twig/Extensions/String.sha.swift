@@ -10,11 +10,11 @@ import CommonCrypto
 
 internal extension String {
     /// Source: https://stackoverflow.com/a/41965688/12395667
-    /// Returns the HMAC-SHA256 Signature signed with `key`.
-    func sha256(with key: String) -> String {
-        /// Using HMAC-SHA256
-        let algorithm: CCHmacAlgorithm = CCHmacAlgorithm(kCCHmacAlgSHA256)
-        let digestLength = Int(CC_SHA256_DIGEST_LENGTH)
+    /// Returns the HMAC-SHA1 Signature signed with `key`.
+    func sha1(with key: String) -> String {
+        /// Using HMAC-SHA1
+        let algorithm: CCHmacAlgorithm = CCHmacAlgorithm(kCCHmacAlgSHA1)
+        let digestLength = Int(CC_SHA1_DIGEST_LENGTH)
         
         /// Convert to C-strings.
         let cKey = key.cString(using: String.Encoding.utf8)
