@@ -99,48 +99,6 @@ extension URLRequest {
     }
 }
 
-func queryTest() -> Void {
-//    let example: [String: String] = [
-//        "oauth_consumer_key": "rBc4q2NVhhslfymUO0JM5L1z3",
-//        "oauth_nonce": "3b9yH8kTFhZ",
-//        "oauth_signature_method": "HMAC-SHA1",
-//        "oauth_timestamp": "1634356377",
-//        "oauth_version": "1.0",
-//    ]
-    let example: [String: String] = [
-        "include_entities": "true",
-        "oauth_consumer_key": "xvz1evFS4wEEPTGEFPHBog",
-        "oauth_nonce": "kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg",
-        "oauth_signature_method": "HMAC-SHA1",
-        "oauth_timestamp": "1318622958",
-        "oauth_token": "370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb",
-        "oauth_version": "1.0",
-        "status": "Hello Ladies + Gentlemen, a signed OAuth request!",
-    ]
-//    let consumer_secret = "JriQ7iqCshuWdYmDytyw1UpjOvOYhueyFvqDaxOOSRy94s4xBD"
-    let consumer_secret = "kAcSOqF21Fu85e7zjz7ZN2U4ZRhfV3WpwPAoE3Z7kBw&LswwdoUaIvS8ltyTt5jkRh4J50vUPVVHtR2YPi5kE"
-    
-    let sig = oAuth1Signature(
-        url: "https://api.twitter.com/1.1/statuses/update.json",
-        parameters: example,
-        key: consumer_secret
-    )
-    
-    print(sig)
-}
-
-func headerTest() -> Void {
-    let example = [
-        "oauth_consumer_key": "xvz1evFS4wEEPTGEFPHBog",
-        "oauth_nonce": "kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg",
-        "oauth_signature": "tnnArxj06cWHq44gCs1OSKk%2FjLY%3D",
-        "oauth_signature_method": "HMAC-SHA1",
-        "oauth_timestamp": "1318622958",
-        "oauth_token": "370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb",
-        "oauth_version": "1.0"
-    ]
-}
-
 internal extension Dictionary where Key == String, Value == String {
     /// Header string as described in
     /// Docs: https://developer.twitter.com/en/docs/authentication/oauth-1-0a/authorizing-a-request
