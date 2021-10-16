@@ -71,9 +71,12 @@ public func requestToken() async throws -> OAuthCredentials? {
         "oauth_timestamp": "\(Int(Date().timeIntervalSince1970))",
         "oauth_version": "1.0",
     ]
+    
+    /// Add cryptographic signature.
     let signature = oAuth1Signature(url: tokenURL, parameters: parameters, key: Keys.consumer_secret)
     parameters["oauth_signature"] = signature
     
+    /// Add parameters in query string.
     tokenURL.append(contentsOf: "?\(parameters.parameterString())")
     
     guard let url = URL(string: tokenURL) else {
@@ -83,7 +86,7 @@ public func requestToken() async throws -> OAuthCredentials? {
     var request = URLRequest(url: url)
     request.httpMethod = HTTPMethod.POST.rawValue
     
-    let (data, response): (Data, URLResponse) = try await URLSession.shared.data(for: request, delegate: nil)
+    let (data, _): (Data, URLResponse) = try await URLSession.shared.data(for: request, delegate: nil)
     
     return OAuthCredentials(data)
 }
