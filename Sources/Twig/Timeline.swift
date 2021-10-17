@@ -8,7 +8,19 @@
 import Foundation
 
 public func timeline(credentials: OAuthCredentials) async throws -> Void {
+    let request = timelineRequest(credentials: credentials)
+    let (data, _): (Data, URLResponse) = try await URLSession.shared.data(for: request, delegate: nil)
     
+    if let stuffs = try? JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
+        for stuff in stuffs {
+            
+        }
+    }
+    
+    print(try! JSONDecoder().decode([RawTweet?].self, from: data))
+}
+
+internal func timelineRequest(credentials: OAuthCredentials) -> URLRequest {
     var timelineURL = "https://api.twitter.com/1.1/statuses/home_timeline.json"
     
     /// Parameters for an authorization request.
@@ -38,8 +50,5 @@ public func timeline(credentials: OAuthCredentials) async throws -> Void {
     var request = URLRequest(url: url)
     request.httpMethod = HTTPMethod.GET.rawValue
     
-    let (data, _): (Data, URLResponse) = try await URLSession.shared.data(for: request, delegate: nil)
-    
-    print(try? JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]])
-    print(try! JSONDecoder().decode([RawTweet?].self, from: data))
+    return request
 }
