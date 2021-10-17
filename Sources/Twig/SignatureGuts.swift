@@ -68,7 +68,7 @@ fileprivate extension OrderedDictionary where Key: CustomStringConvertible, Valu
     }
 }
 
-fileprivate extension Dictionary where Key == String, Value == String {
+internal extension Dictionary where Key == String, Value == String {
     /// Header string as described in
     /// Docs: https://developer.twitter.com/en/docs/authentication/oauth-1-0a/authorizing-a-request
     func headerString() -> String {

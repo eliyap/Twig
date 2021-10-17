@@ -7,7 +7,7 @@
 
 import Foundation
 
-func timeline(credentials: OAuthCredentials) async throws -> Void {
+public func timeline(credentials: OAuthCredentials) async throws -> Void {
     /// Formulate Request.
     let endpoint = "https://api.twitter.com/1.1/statuses/home_timeline.json"
     let url = URL(string: endpoint)!
@@ -32,4 +32,13 @@ func timeline(credentials: OAuthCredentials) async throws -> Void {
         oauthSecret: credentials.oauth_token_secret
     )
     parameters["oauth_signature"] = signature
+    
+    request.setValue(
+        "OAuth \(parameters.headerString())",
+        forHTTPHeaderField: "Authorization"
+    )
+    
+    let (data, _): (Data, URLResponse) = try await URLSession.shared.data(for: request, delegate: nil)
+    
+    print(try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any])
 }
