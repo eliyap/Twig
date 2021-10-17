@@ -8,7 +8,7 @@
 import Foundation
 import OrderedCollections
 
-public struct OAuthCredentials {
+public struct OAuthRequestCredentials {
     public let oauth_token: String
     public let oauth_token_secret: String
     public let oauth_callback_confirmed: Bool
@@ -48,7 +48,7 @@ public struct OAuthCredentials {
     }
 }
 
-public func requestToken() async throws -> OAuthCredentials? {
+public func requestToken() async throws -> OAuthRequestCredentials? {
     var tokenURL = "https://api.twitter.com/oauth/request_token"
     
     /// Parameters for an authorization request.
@@ -77,7 +77,7 @@ public func requestToken() async throws -> OAuthCredentials? {
     
     let (data, _): (Data, URLResponse) = try await URLSession.shared.data(for: request, delegate: nil)
     
-    return OAuthCredentials(data)
+    return OAuthRequestCredentials(data)
 }
 
 // MARK: - OAuth Guts
@@ -99,7 +99,7 @@ fileprivate func oAuth1Signature(
      */
 }
 
-fileprivate extension Dictionary where Key == String, Value == String {
+internal extension Dictionary where Key == String, Value == String {
     func parameterString() -> String {
         self
             .unsafePercentEncoded()
