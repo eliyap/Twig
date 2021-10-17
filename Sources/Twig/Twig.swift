@@ -15,6 +15,9 @@ public enum TwigError: Error {
     /// Indicates the callback URL from `Authorize` was malformed.
     /// https://developer.twitter.com/en/docs/authentication/oauth-1-0a/obtaining-user-access-tokens
     case invalidAuthorizeResponse
+    
+    /// Indicates malformed reponse from `access_token`.
+    case invalidRequestResponse
 }
 
 public enum HTTPMethod: String {

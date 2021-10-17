@@ -20,7 +20,7 @@ public struct OAuthRequestCredentials {
     init?(_ data: Data) {
         guard let string = String(bytes: data, encoding: .ascii) else { return nil }
         let pairs = string.split(separator: "&")
-        guard pairs.count == 3 else { return nil }
+        guard pairs.count >= 3 else { return nil }
         var dict = [String: String]()
         for pair in pairs {
             let components = pair.split(separator: "=")
