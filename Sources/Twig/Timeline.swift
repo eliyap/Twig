@@ -32,17 +32,14 @@ public func timeline(credentials: OAuthCredentials) async throws -> Void {
     )
     parameters["oauth_signature"] = signature
     
+    /// Formulate request.
     timelineURL.append(contentsOf: "?\(parameters.parameterString())")
-    
     let url = URL(string: timelineURL)!
     var request = URLRequest(url: url)
     request.httpMethod = HTTPMethod.GET.rawValue
     
-    print(signature)
-    
-    print(timelineURL)
-
     let (data, _): (Data, URLResponse) = try await URLSession.shared.data(for: request, delegate: nil)
-    print(String(data: data, encoding: .ascii))
-    print(try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any])
+    
+    print(try? JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]])
+    print(try! JSONDecoder().decode([RawTweet?].self, from: data))
 }
