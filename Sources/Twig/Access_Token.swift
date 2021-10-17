@@ -14,7 +14,7 @@ public struct OAuthCredentials {
     public let screen_name: String
 }
 
-func accessToken(callbackURL: String) async throws -> OAuthCredentials {
+public func accessToken(callbackURL: String) async throws -> OAuthCredentials {
     let response = try AuthorizeResponse(callbackURL: callbackURL)
     let parameters: [String: String] = [
         "oauth_token": response.oauth_token,
