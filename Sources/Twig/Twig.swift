@@ -18,6 +18,8 @@ public enum TwigError: Error {
     
     /// Indicates malformed reponse from `access_token`.
     case invalidRequestResponse
+    
+    case malformedJSON
 }
 
 public enum HTTPMethod: String {

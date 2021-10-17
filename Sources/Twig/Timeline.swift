@@ -7,17 +7,22 @@
 
 import Foundation
 
-public func timeline(credentials: OAuthCredentials) async throws -> Void {
+public func timeline(credentials: OAuthCredentials) async throws -> [RawTweet] {
     let request = timelineRequest(credentials: credentials)
     let (data, _): (Data, URLResponse) = try await URLSession.shared.data(for: request, delegate: nil)
     
-    if let stuffs = try? JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
-        for stuff in stuffs {
-            
+    let failables = try! JSONDecoder().decode([Failable<RawTweet>].self, from: data)
+    return failables.compactMap { (failable) -> RawTweet? in
+        if let tweet = failable.item {
+            return tweet
+        } else {
+            #if DEBUG
+            /// Intentionally crash to reveal error.
+            _ = try! JSONDecoder().decode([RawTweet].self, from: data)
+            #endif
+            return nil
         }
     }
-    
-    print(try! JSONDecoder().decode([RawTweet?].self, from: data))
 }
 
 internal func timelineRequest(credentials: OAuthCredentials) -> URLRequest {

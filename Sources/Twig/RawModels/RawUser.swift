@@ -31,7 +31,7 @@ public struct RawUser: Codable {
     public let created_at: String
     
     /// - Note: undocumented nullable.
-    public let profile_banner_url: String
+    public let profile_banner_url: String?
     
     /// - Note: I'm guessing this is nullable.
     public let profile_image_url_https: String?
