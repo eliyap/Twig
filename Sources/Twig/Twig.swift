@@ -2,10 +2,9 @@ import Foundation
 import OrderedCollections
 
 public struct Twig {
-    public private(set) var text = "Hello, World!"
-
-    public init() {
-    }
+    /// Login callback URL scheme.
+    /// Set via the Twitter Developer Portal.
+    public static let scheme = "twittersignin"
 }
 
 public enum TwigError: Error {
