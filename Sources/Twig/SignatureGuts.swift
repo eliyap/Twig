@@ -10,7 +10,7 @@ import OrderedCollections
 
 // MARK: - OAuth Guts
 internal func oAuth1Signature(
-    method: String = HTTPMethod.POST.rawValue,
+    method: String,
     url: String,
     parameters: [String: String],
     consumerSecret: String,
@@ -19,6 +19,8 @@ internal func oAuth1Signature(
     (
         "\(method)"
         + "&\(url.addingPercentEncoding(withAllowedCharacters: .twitter)!)"
+        /// > Make sure to percent encode the parameter string.
+        /// Docs: https://developer.twitter.com/en/docs/authentication/oauth-1-0a/creating-a-signature
         + "&\(parameters.parameterString().addingPercentEncoding(withAllowedCharacters: .twitter)!)"
     ).sha1(with: consumerSecret + "&" + oauthSecret)
     /**

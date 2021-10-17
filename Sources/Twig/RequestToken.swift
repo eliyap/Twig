@@ -62,6 +62,7 @@ public func requestToken() async throws -> OAuthRequestCredentials? {
     
     /// Add cryptographic signature.
     let signature = oAuth1Signature(
+        method: HTTPMethod.POST.rawValue,
         url: tokenURL,
         parameters: parameters,
         consumerSecret: Keys.consumer_secret,
