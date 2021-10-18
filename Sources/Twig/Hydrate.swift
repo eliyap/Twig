@@ -24,40 +24,34 @@ fileprivate func tweetsRequest(credentials: OAuthCredentials, ids: [Int]) -> URL
     /// Only 100 tweets may be requested at once.
     /// Docs: https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/api-reference/get-tweets
     precondition(ids.count <= 100, "Too many IDs!")
+    let idCSV = ids.map{"\($0)"}.joined(separator: ",")
     
     var tweetsURL = "https://api.twitter.com/2/tweets"
     
     /// OAuth 1.0 Authroization Parameters.
     /// Docs: https://developer.twitter.com/en/docs/authentication/oauth-1-0a/authorizing-a-request
     var parameters: [String: String] = [
+        "ids": idCSV,
         "oauth_consumer_key": Keys.consumer,
         "oauth_nonce": nonce(),
         "oauth_signature_method": "HMAC-SHA1",
         "oauth_timestamp": "\(Int(Date().timeIntervalSince1970))",
+        "oauth_token": credentials.oauth_token,
         "oauth_version": "1.0",
     ]
-    
-    parameters["oauth_token"] = credentials.oauth_token
     
     /// Add cryptographic signature.
     let signature = oAuth1Signature(
         method: HTTPMethod.GET,
         url: tweetsURL,
-        parameters: parameters.merging(["ids": ids.map{"\($0)"}.joined(separator: ",")], uniquingKeysWith: {(curr, _) in curr}),
+        parameters: parameters,
         consumerSecret: Keys.consumer_secret,
-        /**
-         > ...where the token secret is not yet known ... the signing key should consist of
-         > the percent encoded consumer secret followed by an ampersand character ‘&’.
-         – https://developer.twitter.com/en/docs/authentication/oauth-1-0a/creating-a-signature
-         */
         oauthSecret: credentials.oauth_token_secret
     )
     parameters["oauth_signature"] = signature
-    //including: ["id": ids.map{"\($0)"}.joined(separator: ",")]
-    tweetsURL.append(contentsOf: "?ids=\(ids.map{"\($0)"}.joined(separator: ","))")
+
+    tweetsURL.append(contentsOf: "?ids=\(idCSV)")
     
-    
-    print(tweetsURL)
     let url = URL(string: tweetsURL)!
     var request = URLRequest(url: url)
     
