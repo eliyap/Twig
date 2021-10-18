@@ -50,25 +50,7 @@ public struct OAuthRequestCredentials {
 public func requestToken() async throws -> OAuthRequestCredentials? {
     var tokenURL = "https://api.twitter.com/oauth/request_token"
     
-    /// Parameters for an authorization request.
-    /// Docs: https://developer.twitter.com/en/docs/authentication/oauth-1-0a/authorizing-a-request
-    var parameters: [String: String] = [
-        "oauth_consumer_key": Keys.consumer,
-        "oauth_nonce": nonce(),
-        "oauth_signature_method": "HMAC-SHA1",
-        "oauth_timestamp": "\(Int(Date().timeIntervalSince1970))",
-        "oauth_version": "1.0",
-    ]
-    
-    /// Add cryptographic signature.
-    let signature = oAuth1Signature(
-        method: HTTPMethod.POST.rawValue,
-        url: tokenURL,
-        parameters: parameters,
-        consumerSecret: Keys.consumer_secret,
-        oauthSecret: ""
-    )
-    parameters["oauth_signature"] = signature
+    let parameters = signedParameters(method: .POST, url: tokenURL, credentials: nil)
     
     /// Add parameters in query string.
     tokenURL.append(contentsOf: "?\(parameters.parameterString())")

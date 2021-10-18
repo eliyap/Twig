@@ -8,8 +8,42 @@
 import Foundation
 import OrderedCollections
 
+/// Allows for missing credentials, as when hitting `request_token` endpoint.
+func signedParameters(method: HTTPMethod, url: String, credentials: OAuthCredentials?) -> [String: String] {
+    /// OAuth 1.0 Authroization Parameters.
+    /// Docs: https://developer.twitter.com/en/docs/authentication/oauth-1-0a/authorizing-a-request
+    var parameters: [String: String] = [
+        "oauth_consumer_key": Keys.consumer,
+        "oauth_nonce": nonce(),
+        "oauth_signature_method": "HMAC-SHA1",
+        "oauth_timestamp": "\(Int(Date().timeIntervalSince1970))",
+        "oauth_version": "1.0",
+    ]
+    
+    if let credentials = credentials {
+        parameters["oauth_token"] = credentials.oauth_token
+    }
+    
+    /// Add cryptographic signature.
+    let signature = oAuth1Signature(
+        method: method.rawValue,
+        url: url,
+        parameters: parameters,
+        consumerSecret: Keys.consumer_secret,
+        /**
+         > ...where the token secret is not yet known ... the signing key should consist of
+         > the percent encoded consumer secret followed by an ampersand character ‘&’.
+         – https://developer.twitter.com/en/docs/authentication/oauth-1-0a/creating-a-signature
+         */
+        oauthSecret: credentials?.oauth_token_secret ?? ""
+    )
+    parameters["oauth_signature"] = signature
+    
+    return parameters
+}
+
 // MARK: - OAuth Guts
-internal func oAuth1Signature(
+fileprivate func oAuth1Signature(
     method: String,
     url: String,
     parameters: [String: String],

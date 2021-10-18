@@ -45,26 +45,7 @@ internal func decodeTweets(from data: Data) throws -> [RawTweet] {
 internal func timelineRequest(credentials: OAuthCredentials) -> URLRequest {
     var timelineURL = "https://api.twitter.com/1.1/statuses/home_timeline.json"
     
-    /// Parameters for an authorization request.
-    /// Docs: https://developer.twitter.com/en/docs/authentication/oauth-1-0a/authorizing-a-request
-    var parameters: [String: String] = [
-        "oauth_consumer_key": Keys.consumer,
-        "oauth_nonce": nonce(),
-        "oauth_signature_method": "HMAC-SHA1",
-        "oauth_timestamp": "\(Int(Date().timeIntervalSince1970))",
-        "oauth_token": credentials.oauth_token,
-        "oauth_version": "1.0",
-    ]
-    
-    /// Add cryptographic signature.
-    let signature = oAuth1Signature(
-        method: HTTPMethod.GET.rawValue,
-        url: timelineURL,
-        parameters: parameters,
-        consumerSecret: Keys.consumer_secret,
-        oauthSecret: credentials.oauth_token_secret
-    )
-    parameters["oauth_signature"] = signature
+    let parameters = signedParameters(method: .GET, url: timelineURL, credentials: credentials)
     
     /// Formulate request.
     timelineURL.append(contentsOf: "?\(parameters.parameterString())")
