@@ -41,7 +41,7 @@ fileprivate func tweetsRequest(credentials: OAuthCredentials, ids: [Int]) -> URL
     
     /// Add cryptographic signature.
     let signature = oAuth1Signature(
-        method: HTTPMethod.GET.rawValue,
+        method: HTTPMethod.GET,
         url: tweetsURL,
         parameters: parameters.merging(["ids": ids.map{"\($0)"}.joined(separator: ",")], uniquingKeysWith: {(curr, _) in curr}),
         consumerSecret: Keys.consumer_secret,

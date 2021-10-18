@@ -37,7 +37,7 @@ func signedParameters(
     
     /// Add cryptographic signature.
     let signature = oAuth1Signature(
-        method: method.rawValue,
+        method: method,
         url: url,
         parameters: parameters,
         consumerSecret: Keys.consumer_secret,
@@ -55,14 +55,14 @@ func signedParameters(
 
 // MARK: - OAuth Guts
 internal func oAuth1Signature(
-    method: String,
+    method: HTTPMethod,
     url: String,
     parameters: [String: String],
     consumerSecret: String,
     oauthSecret: String
 ) -> String {
     (
-        "\(method)"
+        method.rawValue
         + "&\(url.addingPercentEncoding(withAllowedCharacters: .twitter)!)"
         /// > Make sure to percent encode the parameter string.
         /// Docs: https://developer.twitter.com/en/docs/authentication/oauth-1-0a/creating-a-signature
