@@ -20,6 +20,9 @@ public func hydratedTweets(credentials: OAuthCredentials, ids: [Int]) async thro
     print(try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any])
 }
 
+/// - Note: manual authentication affords us:
+///     - non-escaped commas when feeding in id comma separated values,
+///     - OAuth as a header, not a query string.
 fileprivate func tweetsRequest(credentials: OAuthCredentials, ids: [Int]) -> URLRequest {
     /// Only 100 tweets may be requested at once.
     /// Docs: https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/api-reference/get-tweets
