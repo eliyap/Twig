@@ -9,7 +9,18 @@ import Foundation
 import OrderedCollections
 
 /// Allows for missing credentials, as when hitting `request_token` endpoint.
-func signedParameters(method: HTTPMethod, url: String, credentials: OAuthCredentials?) -> [String: String] {
+/// - Parameters:
+///   - method: ``HTTPMethod`` being used for the reqest.
+///   - url: Base URL string.
+///   - credentials: User's ``OAuthCredentials``, if any.
+///   - additionalParameters: additional parameters to add for signing.
+/// - Returns: signed dictionary for authentication.
+func signedParameters(
+    method: HTTPMethod,
+    url: String,
+    credentials: OAuthCredentials?,
+    including additionalParameters: [String: String] = [:]
+) -> [String: String] {
     /// OAuth 1.0 Authroization Parameters.
     /// Docs: https://developer.twitter.com/en/docs/authentication/oauth-1-0a/authorizing-a-request
     var parameters: [String: String] = [
@@ -18,7 +29,7 @@ func signedParameters(method: HTTPMethod, url: String, credentials: OAuthCredent
         "oauth_signature_method": "HMAC-SHA1",
         "oauth_timestamp": "\(Int(Date().timeIntervalSince1970))",
         "oauth_version": "1.0",
-    ]
+    ].merging(additionalParameters, uniquingKeysWith: {(curr, _) in curr})
     
     if let credentials = credentials {
         parameters["oauth_token"] = credentials.oauth_token
@@ -43,7 +54,7 @@ func signedParameters(method: HTTPMethod, url: String, credentials: OAuthCredent
 }
 
 // MARK: - OAuth Guts
-fileprivate func oAuth1Signature(
+internal func oAuth1Signature(
     method: String,
     url: String,
     parameters: [String: String],
