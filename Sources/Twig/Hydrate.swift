@@ -37,7 +37,21 @@ public func hydratedTweets(credentials: OAuthCredentials, ids: [Int]) async thro
         ids = Array(ids[..<100])
     }
     
-    let request = tweetsRequest(credentials: credentials, ids: ids)
+    let request = tweetsRequest(
+        credentials: credentials,
+        ids: ids,
+        expansions: [
+            .author_id,
+            .attachments,
+            .conversation_id,
+            .created_at,
+            .in_reply_to_user_id,
+            .public_metrics,
+            .referenced_tweets,
+            .source,
+        ]
+    )
+    
     let (data, _) = try await URLSession.shared.data(for: request, delegate: nil)
 
     print(try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any])
@@ -46,11 +60,12 @@ public func hydratedTweets(credentials: OAuthCredentials, ids: [Int]) async thro
 /// - Note: manual authentication affords us:
 ///     - non-escaped commas when feeding in id comma separated values,
 ///     - OAuth as a header, not a query string.
-fileprivate func tweetsRequest(credentials: OAuthCredentials, ids: [Int]) -> URLRequest {
+fileprivate func tweetsRequest(credentials: OAuthCredentials, ids: [Int], expansions: Set<TweetExpansion> = []) -> URLRequest {
     /// Only 100 tweets may be requested at once.
     /// Docs: https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/api-reference/get-tweets
     precondition(ids.count <= 100, "Too many IDs!")
     let idCSV = ids.map{"\($0)"}.joined(separator: ",")
+    let fieldCSV = expansions.map(\.rawValue).joined(separator: ",")
     
     var tweetsURL = "https://api.twitter.com/2/tweets"
     
@@ -64,6 +79,7 @@ fileprivate func tweetsRequest(credentials: OAuthCredentials, ids: [Int]) -> URL
         "oauth_timestamp": "\(Int(Date().timeIntervalSince1970))",
         "oauth_token": credentials.oauth_token,
         "oauth_version": "1.0",
+        "tweet.fields": fieldCSV,
     ]
     
     /// Add cryptographic signature.
@@ -76,7 +92,7 @@ fileprivate func tweetsRequest(credentials: OAuthCredentials, ids: [Int]) -> URL
     )
     parameters["oauth_signature"] = signature
 
-    tweetsURL.append(contentsOf: "?ids=\(idCSV)")
+    tweetsURL.append(contentsOf: "?ids=\(idCSV)&tweet.fields=\(fieldCSV)")
     
     let url = URL(string: tweetsURL)!
     var request = URLRequest(url: url)
