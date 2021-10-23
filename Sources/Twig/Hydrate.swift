@@ -9,7 +9,7 @@ import Foundation
 
 /// The additional information we may obtain for a Tweet Object.
 /// Docs: https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/tweet
-public enum TweetExpansion: String {
+public enum TweetField: String {
     case attachments
     case author_id
     case context_annotations
@@ -40,7 +40,7 @@ public func hydratedTweets(credentials: OAuthCredentials, ids: [Int]) async thro
     let request = tweetsRequest(
         credentials: credentials,
         ids: ids,
-        expansions: [
+        fields: [
             .author_id,
             .attachments,
             .conversation_id,
@@ -60,12 +60,12 @@ public func hydratedTweets(credentials: OAuthCredentials, ids: [Int]) async thro
 /// - Note: manual authentication affords us:
 ///     - non-escaped commas when feeding in id comma separated values,
 ///     - OAuth as a header, not a query string.
-fileprivate func tweetsRequest(credentials: OAuthCredentials, ids: [Int], expansions: Set<TweetExpansion> = []) -> URLRequest {
+fileprivate func tweetsRequest(credentials: OAuthCredentials, ids: [Int], fields: Set<TweetField> = []) -> URLRequest {
     /// Only 100 tweets may be requested at once.
     /// Docs: https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/api-reference/get-tweets
     precondition(ids.count <= 100, "Too many IDs!")
     let idCSV = ids.map{"\($0)"}.joined(separator: ",")
-    let fieldCSV = expansions.map(\.rawValue).joined(separator: ",")
+    let fieldCSV = fields.map(\.rawValue).joined(separator: ",")
     
     var tweetsURL = "https://api.twitter.com/2/tweets"
     
