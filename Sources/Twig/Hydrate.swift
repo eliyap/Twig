@@ -12,7 +12,7 @@ public func hydratedTweets(
     ids: [Int],
     fields: Set<TweetField> = [],
     expansions: Set<TweetExpansion> = []
-) async throws -> Void {
+) async throws -> ([RawHydratedTweet], [RawIncludeUser]) {
     var ids = ids
     if ids.count >= 100 {
         Swift.debugPrint("⚠️ WARNING: DISCARDING IDS OVER 100!")
@@ -23,7 +23,13 @@ public func hydratedTweets(
     
     let (data, _) = try await URLSession.shared.data(for: request, delegate: nil)
 
-    print(try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any])
+    /// Decode and nil-coalesce.
+    let blob = try JSONDecoder().decode(RawHydratedBlob.self, from: data)
+    var tweets: [RawHydratedTweet] = blob.data.compactMap(\.item)
+    tweets += blob.includes?.tweets.compactMap(\.item) ?? []
+    let users: [RawIncludeUser] = blob.includes?.users.compactMap(\.item) ?? []
+    
+    return (tweets, users)
 }
 
 /// - Note: manual authentication affords us:
