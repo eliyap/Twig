@@ -7,14 +7,14 @@
 
 import Foundation
 
-struct RawHydratedBlob: Decodable {
+internal struct RawHydratedBlob: Decodable {
     public let data: [Failable<RawHydratedTweet>]
-    public let includes: RawIncludes
+    public let includes: RawIncludes?
 }
 
-public struct RawIncludes: Codable {
-    public let tweets: [RawHydratedTweet]
-    public let users: [RawIncludeUser]
+internal struct RawIncludes: Decodable {
+    public let tweets: [Failable<RawHydratedTweet>]
+    public let users: [Failable<RawIncludeUser>]
 }
 
 public struct RawIncludeUser: Codable {
