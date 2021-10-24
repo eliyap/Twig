@@ -47,7 +47,7 @@ public struct RawHydratedTweet: Codable {
     
     public let id: String
     public let public_metrics: RawPublicMetrics
-    public let created_at: String
+    public let created_at: Date
     public let conversation_id: String
     public let author_id: String
     public let source: String

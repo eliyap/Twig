@@ -23,8 +23,13 @@ public func hydratedTweets(
     
     let (data, _) = try await URLSession.shared.data(for: request, delegate: nil)
 
+    // DEBUG
+    print(try? JSONSerialization.jsonObject(with: data, options: []))
+    
     /// Decode and nil-coalesce.
-    let blob = try JSONDecoder().decode(RawHydratedBlob.self, from: data)
+    let decoder = JSONDecoder()
+    decoder.dateDecodingStrategy = .formatted(.iso8601withFractionalSeconds)
+    let blob = try decoder.decode(RawHydratedBlob.self, from: data)
     var tweets: [RawHydratedTweet] = blob.data.compactMap(\.item)
     tweets += blob.includes?.tweets.compactMap(\.item) ?? []
     let users: [RawIncludeUser] = blob.includes?.users.compactMap(\.item) ?? []
