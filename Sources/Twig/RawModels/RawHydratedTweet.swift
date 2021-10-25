@@ -74,3 +74,30 @@ public struct RawPublicMetrics: Codable {
     public let reply_count: Int
     public let retweet_count: Int
 }
+
+public extension RawHydratedTweet {
+    var replyID: String? {
+        referenced_tweets?.first(where: {$0.type == .replied_to})?.id
+    }
+}
+
+protocol ParsableInt: FixedWidthInteger {
+    init?<S>(_ text: S, radix: Int) where S : StringProtocol
+}
+
+extension Int: ParsableInt { }
+extension Int64: ParsableInt { }
+
+extension ParsableInt {
+    /// Cause a dev crash if this fails.
+    static func devCast(_ str: String) -> Self? {
+        if let result = Self(str, radix: 10) {
+            #if DEBUG
+            assert(false, "Could not cast \(str) to \(Self.self) with max \(max)")
+            #endif
+            return result
+        } else {
+            return nil
+        }
+    }
+}

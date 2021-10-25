@@ -23,9 +23,6 @@ public func hydratedTweets(
     
     let (data, _) = try await URLSession.shared.data(for: request, delegate: nil)
 
-    // DEBUG
-    print(try? JSONSerialization.jsonObject(with: data, options: []))
-    
     /// Decode and nil-coalesce.
     let decoder = JSONDecoder()
     decoder.dateDecodingStrategy = .formatted(.iso8601withFractionalSeconds)
