@@ -24,6 +24,17 @@ public struct RawIncludeUser: Codable {
 }
 
 public struct RawHydratedTweet: Codable {
+    public let id: String
+    public let public_metrics: RawPublicMetrics
+    public let created_at: Date
+    public let conversation_id: String
+    public let author_id: String
+    public let source: String
+    public let text: String
+    public let referenced_tweets: [RawReferencedTweet]?
+    public let in_reply_to_user_id: String?
+    // entities here...
+    
     /// The fields we're usually interested in, and which this object expects that you asked for.
     public static let fields: Set<TweetField> = [
         .author_id,
@@ -44,17 +55,6 @@ public struct RawHydratedTweet: Codable {
         .entities_mentions_username,
         .referenced_tweets_id_author_id,
     ]
-    
-    public let id: String
-    public let public_metrics: RawPublicMetrics
-    public let created_at: Date
-    public let conversation_id: String
-    public let author_id: String
-    public let source: String
-    public let text: String
-    public let referenced_tweets: [RawReferencedTweet]?
-    public let in_reply_to_user_id: String?
-    // entities here...
 }
 
 public struct RawReferencedTweet: Codable {
