@@ -17,7 +17,7 @@ internal struct RawIncludes: Decodable {
     public let users: [Failable<RawIncludeUser>]
 }
 
-public struct RawIncludeUser: Codable {
+public struct RawIncludeUser: Codable, Sendable {
     public let id: String
     public let name: String
     
@@ -59,18 +59,18 @@ public struct RawHydratedTweet: Codable {
     ]
 }
 
-public struct RawReferencedTweet: Codable {
+public struct RawReferencedTweet: Codable, Sendable {
     public let id: String
     public let type: RawReferenceType
 }
 
-public enum RawReferenceType: String, Codable {
+public enum RawReferenceType: String, Codable, Sendable {
     case retweeted
     case replied_to
     case quoted
 }
 
-public struct RawPublicMetrics: Codable {
+public struct RawPublicMetrics: Codable, Sendable {
     public let like_count: Int
     public let quote_count: Int
     public let reply_count: Int
