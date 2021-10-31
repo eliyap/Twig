@@ -20,6 +20,8 @@ internal struct RawIncludes: Decodable {
 public struct RawIncludeUser: Codable {
     public let id: String
     public let name: String
+    
+    /// API v2's alias for v1's `screen_name`.
     public let username: String
 }
 
