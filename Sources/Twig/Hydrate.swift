@@ -9,7 +9,7 @@ import Foundation
 
 public func hydratedTweets(
     credentials: OAuthCredentials,
-    ids: [Int],
+    ids: [String],
     fields: Set<TweetField> = [],
     expansions: Set<TweetExpansion> = []
 ) async throws -> ([RawHydratedTweet], [RawIncludeUser]) {
@@ -39,14 +39,14 @@ public func hydratedTweets(
 ///     - OAuth as a header, not a query string.
 fileprivate func tweetsRequest(
     credentials: OAuthCredentials,
-    ids: [Int],
+    ids: [String],
     fields: Set<TweetField> = [],
     expansions: Set<TweetExpansion> = []
 ) -> URLRequest {
     /// Only 100 tweets may be requested at once.
     /// Docs: https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/api-reference/get-tweets
     precondition(ids.count <= 100, "Too many IDs!")
-    let idCSV = ids.map{"\($0)"}.joined(separator: ",")
+    let idCSV = ids.joined(separator: ",")
     let fieldCSV = fields.map(\.rawValue).joined(separator: ",")
     let expansionCSV = expansions.map(\.rawValue).joined(separator: ",")
     
