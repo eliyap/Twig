@@ -8,15 +8,15 @@ public func requestFollowing(credentials: OAuthCredentials) async throws -> Void
 }
 
 internal func follwingRequest(credentials: OAuthCredentials) -> URLRequest {
-    var followingURL = "https://api.twitter.com/2/users/\(credentials.user_id)/following"
-
-    let parameters = signedParameters(method: .GET, url: followingURL, credentials: credentials)
-
     /// Formulate request.
-    followingURL.append(contentsOf: "?\(parameters.parameterString())")
+    let followingURL = "https://api.twitter.com/2/users/\(credentials.user_id)/following"
     let url = URL(string: followingURL)!
     var request = URLRequest(url: url)
     request.httpMethod = HTTPMethod.GET.rawValue
+
+    /// - Note: Query string authorization did not work. Use header instead.
+    let parameters = signedParameters(method: .GET, url: followingURL, credentials: credentials)
+    request.setValue("OAuth \(parameters.headerString())", forHTTPHeaderField: "authorization")
     
     return request
 }
