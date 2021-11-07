@@ -36,7 +36,12 @@ public func timelinePublisher(credentials: OAuthCredentials, sinceID: String?, m
 internal func timelineRequest(credentials: OAuthCredentials, sinceID: String?, maxID: String?) -> URLRequest {
     var timelineURL = "https://api.twitter.com/1.1/statuses/home_timeline.json"
     
-    var additional: [String: String] = [:]
+    /**
+     Instead of fetching 20 at a time, fetch the maximum 200 at a time.
+     Especially important because `home_timeline` API limit is 15 reqeuests per 15 mins.
+     Docs: https://developer.twitter.com/en/docs/twitter-api/v1/tweets/timelines/api-reference/get-statuses-home_timeline
+     */
+    var additional: [String: String] = ["count":"200"]
     if let sinceID = sinceID {
         additional["since_id"] = sinceID
     }
