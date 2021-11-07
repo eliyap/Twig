@@ -17,7 +17,7 @@ internal struct RawIncludes: Decodable {
     public let users: [Failable<RawIncludeUser>]?
 }
 
-public struct RawIncludeUser: Codable, Sendable {
+public struct RawIncludeUser: Codable, Sendable, Hashable {
     public let id: String
     public let name: String
     
