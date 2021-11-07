@@ -13,8 +13,8 @@ internal struct RawHydratedBlob: Decodable {
 }
 
 internal struct RawIncludes: Decodable {
-    public let tweets: [Failable<RawHydratedTweet>]
-    public let users: [Failable<RawIncludeUser>]
+    public let tweets: [Failable<RawHydratedTweet>]?
+    public let users: [Failable<RawIncludeUser>]?
 }
 
 public struct RawIncludeUser: Codable, Sendable {
