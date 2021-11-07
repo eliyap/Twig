@@ -13,17 +13,30 @@ internal struct RawHydratedBlob: Decodable {
 }
 
 internal struct RawIncludes: Decodable {
-    public let tweets: [Failable<RawHydratedTweet>]
-    public let users: [Failable<RawIncludeUser>]
+    public let tweets: [Failable<RawHydratedTweet>]?
+    public let users: [Failable<RawIncludeUser>]?
 }
 
-public struct RawIncludeUser: Codable {
+public struct RawIncludeUser: Codable, Sendable, Hashable {
     public let id: String
     public let name: String
+    
+    /// API v2's alias for v1's `screen_name`.
     public let username: String
 }
 
 public struct RawHydratedTweet: Codable {
+    public let id: String
+    public let public_metrics: RawPublicMetrics
+    public let created_at: Date
+    public let conversation_id: String
+    public let author_id: String
+    public let source: String
+    public let text: String
+    public let referenced_tweets: [RawReferencedTweet]?
+    public let in_reply_to_user_id: String?
+    // entities here...
+    
     /// The fields we're usually interested in, and which this object expects that you asked for.
     public static let fields: Set<TweetField> = [
         .author_id,
@@ -44,33 +57,49 @@ public struct RawHydratedTweet: Codable {
         .entities_mentions_username,
         .referenced_tweets_id_author_id,
     ]
-    
-    public let id: String
-    public let public_metrics: RawPublicMetrics
-    public let created_at: String
-    public let conversation_id: String
-    public let author_id: String
-    public let source: String
-    public let text: String
-    public let referenced_tweets: [RawReferencedTweet]?
-    public let in_reply_to_user_id: String?
-    // entities here...
 }
 
-public struct RawReferencedTweet: Codable {
+public struct RawReferencedTweet: Codable, Sendable {
     public let id: String
     public let type: RawReferenceType
 }
 
-public enum RawReferenceType: String, Codable {
+public enum RawReferenceType: String, Codable, Sendable {
     case retweeted
     case replied_to
     case quoted
 }
 
-public struct RawPublicMetrics: Codable {
+public struct RawPublicMetrics: Codable, Sendable {
     public let like_count: Int
     public let quote_count: Int
     public let reply_count: Int
     public let retweet_count: Int
+}
+
+public extension RawHydratedTweet {
+    var replyID: String? {
+        referenced_tweets?.first(where: {$0.type == .replied_to})?.id
+    }
+}
+
+protocol ParsableInt: FixedWidthInteger {
+    init?<S>(_ text: S, radix: Int) where S : StringProtocol
+}
+
+extension Int: ParsableInt { }
+extension Int64: ParsableInt { }
+
+extension ParsableInt {
+    /// Cause a dev crash if this fails.
+    static func devCast(_ str: String) -> Self? {
+        if let result = Self(str, radix: 10) {
+            #if DEBUG
+            assert(false, "Could not cast \(str) to \(Self.self) with max \(max)")
+            #endif
+            return result
+        } else {
+            return nil
+        }
+    }
 }

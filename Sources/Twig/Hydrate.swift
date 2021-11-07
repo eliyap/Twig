@@ -9,7 +9,7 @@ import Foundation
 
 public func hydratedTweets(
     credentials: OAuthCredentials,
-    ids: [Int],
+    ids: [String],
     fields: Set<TweetField> = [],
     expansions: Set<TweetExpansion> = []
 ) async throws -> ([RawHydratedTweet], [RawIncludeUser]) {
@@ -24,10 +24,12 @@ public func hydratedTweets(
     let (data, _) = try await URLSession.shared.data(for: request, delegate: nil)
 
     /// Decode and nil-coalesce.
-    let blob = try JSONDecoder().decode(RawHydratedBlob.self, from: data)
+    let decoder = JSONDecoder()
+    decoder.dateDecodingStrategy = .formatted(.iso8601withFractionalSeconds)
+    let blob = try decoder.decode(RawHydratedBlob.self, from: data)
     var tweets: [RawHydratedTweet] = blob.data.compactMap(\.item)
-    tweets += blob.includes?.tweets.compactMap(\.item) ?? []
-    let users: [RawIncludeUser] = blob.includes?.users.compactMap(\.item) ?? []
+    tweets += blob.includes?.tweets?.compactMap(\.item) ?? []
+    let users: [RawIncludeUser] = blob.includes?.users?.compactMap(\.item) ?? []
     
     return (tweets, users)
 }
@@ -37,14 +39,14 @@ public func hydratedTweets(
 ///     - OAuth as a header, not a query string.
 fileprivate func tweetsRequest(
     credentials: OAuthCredentials,
-    ids: [Int],
+    ids: [String],
     fields: Set<TweetField> = [],
     expansions: Set<TweetExpansion> = []
 ) -> URLRequest {
     /// Only 100 tweets may be requested at once.
     /// Docs: https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/api-reference/get-tweets
     precondition(ids.count <= 100, "Too many IDs!")
-    let idCSV = ids.map{"\($0)"}.joined(separator: ",")
+    let idCSV = ids.joined(separator: ",")
     let fieldCSV = fields.map(\.rawValue).joined(separator: ",")
     let expansionCSV = expansions.map(\.rawValue).joined(separator: ",")
     

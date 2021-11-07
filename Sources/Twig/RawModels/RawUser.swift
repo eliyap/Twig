@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct RawUser: Codable {
+public struct RawUser: Codable, Sendable {
     public let id: Int64
     public let id_str: String
     public let name: String
