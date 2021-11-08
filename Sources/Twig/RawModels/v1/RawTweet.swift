@@ -10,7 +10,7 @@ import Foundation
 /** Docs: https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/tweet
     Names and types mirror the documented API, to allow for synthesized `Codable` conformance.
  */
-public struct RawTweet: Codable {
+public struct RawV1Tweet: Codable {
     public let created_at: String
     public let id: Int64
     public let id_str: String
