@@ -40,7 +40,7 @@ public struct RawHydratedTweet: Codable {
     public let text: String
     public let referenced_tweets: [RawReferencedTweet]?
     public let in_reply_to_user_id: String?
-    // entities here...
+    public let entities: RawEntities?
     
     /// The fields we're usually interested in, and which this object expects that you asked for.
     public static let fields: Set<TweetField> = [
