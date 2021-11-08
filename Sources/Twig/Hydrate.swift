@@ -14,7 +14,7 @@ public func hydratedTweets(
     expansions: Set<TweetExpansion> = []
 ) async throws -> ([RawHydratedTweet], [RawIncludeUser]) {
     var ids = ids
-    if ids.count >= 100 {
+    if ids.count > 100 {
         Swift.debugPrint("⚠️ WARNING: DISCARDING IDS OVER 100!")
         ids = Array(ids[..<100])
     }
