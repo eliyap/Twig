@@ -7,11 +7,17 @@
 
 import Foundation
 
+/// Docs: https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/user
 public struct RawUser: Codable, Sendable {
     public let id: Int64
     public let id_str: String
+    
+    /// Displayed name.
     public let name: String
+    
+    /// Twitter Handle.
     public let screen_name: String
+    
     public let location: String?
     
     /// `derived` ignored.
