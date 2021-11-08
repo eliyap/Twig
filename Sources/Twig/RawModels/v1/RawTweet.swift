@@ -49,7 +49,7 @@ public struct RawV1Tweet: Codable {
     public let favorite_count: Int?
     
     /// - Note: this value is non-nullable, but may not be present if not requested.
-    public let entities: RawEntities?
+    public let entities: RawV1Entities?
     
     /// - Note: this value is non-nullable, but may not be present if not requested.
     public let extended_entities: RawExtendedEntities?
