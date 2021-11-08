@@ -15,10 +15,6 @@ public struct RawPlace: Codable {
     /// Incomplete...
 }
 
-public struct RawEntities: Codable {
-    /// Incomplete...
-}
-
 public struct RawExtendedEntities: Codable {
     /// Incomplete...
 }

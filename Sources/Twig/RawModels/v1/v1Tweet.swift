@@ -10,7 +10,7 @@ import Foundation
 /** Docs: https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/tweet
     Names and types mirror the documented API, to allow for synthesized `Codable` conformance.
  */
-public struct RawTweet: Codable {
+public struct RawV1Tweet: Codable {
     public let created_at: String
     public let id: Int64
     public let id_str: String
@@ -49,7 +49,7 @@ public struct RawTweet: Codable {
     public let favorite_count: Int?
     
     /// - Note: this value is non-nullable, but may not be present if not requested.
-    public let entities: RawEntities?
+    public let entities: RawV1Entities?
     
     /// - Note: this value is non-nullable, but may not be present if not requested.
     public let extended_entities: RawExtendedEntities?

@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 /// `async` approach.
-public func timeline(credentials: OAuthCredentials, sinceID: String?, maxID: String?) async throws -> [RawTweet] {
+public func timeline(credentials: OAuthCredentials, sinceID: String?, maxID: String?) async throws -> [RawV1Tweet] {
     let request = timelineRequest(credentials: credentials, sinceID: sinceID, maxID: maxID)
     let (data, response): (Data, URLResponse) = try await URLSession.shared.data(for: request, delegate: nil)
     do {
@@ -24,7 +24,7 @@ public func timeline(credentials: OAuthCredentials, sinceID: String?, maxID: Str
 }
 
 /// Combine approach.
-public func timelinePublisher(credentials: OAuthCredentials, sinceID: String?, maxID: String?) -> AnyPublisher<[RawTweet], Error> {
+public func timelinePublisher(credentials: OAuthCredentials, sinceID: String?, maxID: String?) -> AnyPublisher<[RawV1Tweet], Error> {
     let request = timelineRequest(credentials: credentials, sinceID: sinceID, maxID: maxID)
     return URLSession.shared.dataTaskPublisher(for: request)
         .tryMap { (data, _) in try decodeFailableArray(from: data) }
