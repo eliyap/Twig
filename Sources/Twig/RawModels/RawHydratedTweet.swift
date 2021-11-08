@@ -52,6 +52,7 @@ public struct RawHydratedTweet: Codable {
         .public_metrics,
         .referenced_tweets,
         .source,
+        .entities,
     ]
     
     /// The expansions we're usually interested in, and which this object expects that you asked for.
