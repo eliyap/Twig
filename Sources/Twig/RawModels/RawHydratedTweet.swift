@@ -30,6 +30,7 @@ public struct RawIncludeUser: Codable, Sendable, Hashable {
     public let username: String
 }
 
+/// Docs: https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/tweet
 public struct RawHydratedTweet: Codable {
     public let id: String
     public let public_metrics: RawPublicMetrics
