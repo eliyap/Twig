@@ -8,7 +8,7 @@
 import Foundation
 
 internal struct RawHydratedBlob: Decodable {
-    public let data: [Failable<RawHydratedTweet>]
+    public let data: [Failable<RawHydratedTweet>]?
     public let includes: RawIncludes?
 }
 

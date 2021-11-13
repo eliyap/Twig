@@ -27,7 +27,7 @@ public func hydratedTweets(
     let decoder = JSONDecoder()
     decoder.dateDecodingStrategy = .formatted(.iso8601withFractionalSeconds)
     let blob = try decoder.decode(RawHydratedBlob.self, from: data)
-    var tweets: [RawHydratedTweet] = blob.data.compactMap(\.item)
+    var tweets: [RawHydratedTweet] = (blob.data ?? []).compactMap(\.item)
     tweets += blob.includes?.tweets?.compactMap(\.item) ?? []
     let users: [RawIncludeUser] = blob.includes?.users?.compactMap(\.item) ?? []
     
