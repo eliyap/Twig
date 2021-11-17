@@ -22,12 +22,21 @@ public struct RawTag: Codable {
     public let tag: String
 }
 
+/// Docs: https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/entities#urls
 public struct RawURL: Codable {
     public let start: Int
     public let end: Int
+    
+    /// `t.co` URL.
     public let url: String
-    public let expanded_url: String
+    
+    /// URL pasted/typed into Tweet.
+    /// Example: `"display_url":"bit.ly/2so49n2"`
     public let display_url: String
+
+    /// Expanded version of `` display_url`` .
+    /// Example: `"expanded_url":"http://bit.ly/2so49n2"`
+    public let expanded_url: String    
 }
 
 public struct RawAnnotation: Codable {
