@@ -32,6 +32,10 @@ public enum MediaField: String {
      */
     case alt_text = "alt_text"
     
+    /// - Note: Undocumented!
+    /// The URL for retrieving the image.
+    case url = "url"
+    
     /* ignored keys */
     // non_public_metrics
     // organic_metrics
