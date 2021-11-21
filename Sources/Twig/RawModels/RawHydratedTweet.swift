@@ -15,6 +15,18 @@ internal struct RawHydratedBlob: Decodable {
 internal struct RawIncludes: Decodable {
     public let tweets: [Failable<RawHydratedTweet>]?
     public let users: [Failable<RawIncludeUser>]?
+    public let media: [Failable<RawIncludeMedia>]?
+}
+
+public struct RawIncludeMedia: Decodable, Hashable, Sendable {
+    public let media_key: String
+    public let type: RawIncludeMediaType
+}
+
+public enum RawIncludeMediaType: String, Decodable, Hashable, Sendable {
+    case photo
+    case animated_gif
+    case video
 }
 
 /// Docs: https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/user
