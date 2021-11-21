@@ -38,7 +38,10 @@ public struct RawURL: Codable {
     /// Example: `"expanded_url":"http://bit.ly/2so49n2"`
     public let expanded_url: String
     
-    /** Sometimes extra data is provided. */
+    /**
+     Sometimes extra data is provided.
+     - Note: the below fields are not currently being used.
+     */
     
     /// Website description text. Typically long.
     public let description: String?
