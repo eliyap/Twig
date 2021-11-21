@@ -78,6 +78,14 @@ public struct RawHydratedTweet: Codable {
         .entities_mentions_username,
         .referenced_tweets_id_author_id,
     ]
+    
+    public static let mediaFields: Set<MediaField> = [
+        .duration_ms,
+        .height,
+        .width,
+        .preview_image_url,
+        .alt_text,
+    ]
 }
 
 public struct RawAttachments: Codable, Sendable, Hashable {
