@@ -61,6 +61,7 @@ public struct RawHydratedTweet: Codable {
         .author_id,
         .referenced_tweets_id,
         .in_reply_to_user_id,
+        .attachments_media_keys,
         .entities_mentions_username,
         .referenced_tweets_id_author_id,
     ]
