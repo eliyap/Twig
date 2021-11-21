@@ -36,7 +36,20 @@ public struct RawURL: Codable {
 
     /// Expanded version of `` display_url`` .
     /// Example: `"expanded_url":"http://bit.ly/2so49n2"`
-    public let expanded_url: String    
+    public let expanded_url: String
+    
+    /** Sometimes extra data is provided. */
+    
+    /// Website description text. Typically long.
+    public let description: String?
+    
+    public let unwound_url: String?
+    
+    /// The title you would see in the tab.
+    public let title: String?
+    
+    /// HTTP Response Code.
+    public let status: Int?
 }
 
 public struct RawAnnotation: Codable {
