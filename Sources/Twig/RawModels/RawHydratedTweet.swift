@@ -20,7 +20,19 @@ internal struct RawIncludes: Decodable {
 
 public struct RawIncludeMedia: Decodable, Hashable, Sendable {
     public let media_key: String
+    
     public let type: RawIncludeMediaType
+    
+    /// Pixel Dimensions.
+    public let width: Int
+    public let height: Int
+    
+    public let preview_image_url: String?
+    public let duration_ms: Int?
+    
+    public let alt_text: String?
+    
+    public let url: String?
 }
 
 public enum RawIncludeMediaType: String, Decodable, Hashable, Sendable {
@@ -85,6 +97,7 @@ public struct RawHydratedTweet: Codable {
         .width,
         .preview_image_url,
         .alt_text,
+        .url,
     ]
 }
 
