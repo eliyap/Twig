@@ -15,7 +15,7 @@ public func hydratedTweets(
     fields: Set<TweetField> = [],
     expansions: Set<TweetExpansion> = [],
     mediaFields: Set<MediaField> = []
-) async throws -> ([RawHydratedTweet], [RawIncludeUser]) {
+) async throws -> ([RawHydratedTweet], [RawIncludeUser], [RawIncludeMedia]) {
     var ids = ids
     if ids.count > 100 {
         Swift.debugPrint("⚠️ WARNING: DISCARDING IDS OVER 100!")
@@ -50,8 +50,9 @@ public func hydratedTweets(
     }
     tweets += blob.includes?.tweets?.compactMap(\.item) ?? []
     let users: [RawIncludeUser] = blob.includes?.users?.compactMap(\.item) ?? []
+    let media: [RawIncludeMedia] = blob.includes?.media?.compactMap(\.item) ?? []
     
-    return (tweets, users)
+    return (tweets, users, media)
 }
 
 /// - Note: manual authentication affords us:
