@@ -7,7 +7,7 @@
 
 import Foundation
 
-fileprivate let DEBUG_DUMP_JSON = true
+fileprivate let DEBUG_DUMP_JSON = false
 
 public func hydratedTweets(
     credentials: OAuthCredentials,
