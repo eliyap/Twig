@@ -9,21 +9,21 @@ public struct RawEntities: Codable {
     public var urls: [RawURL]?
 }
 
-public struct RawMention: Codable {
+public struct RawMention: Codable, Hashable, Sendable {
     public let start: Int
     public let end: Int
     public let id: String
     public let username: String
 }
 
-public struct RawTag: Codable {
+public struct RawTag: Codable, Hashable, Sendable {
     public let start: Int
     public let end: Int
     public let tag: String
 }
 
 /// Docs: https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/entities#urls
-public struct RawURL: Codable {
+public struct RawURL: Codable, Hashable, Sendable {
     public let start: Int
     public let end: Int
     
@@ -55,7 +55,7 @@ public struct RawURL: Codable {
     public let status: Int?
 }
 
-public struct RawAnnotation: Codable {
+public struct RawAnnotation: Codable, Hashable, Sendable {
     public let start: Int
     public let end: Int
     public let normalized_text: String
