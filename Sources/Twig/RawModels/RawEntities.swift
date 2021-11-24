@@ -3,10 +3,10 @@ import Foundation
 // MARK: - v2 Entities
 
 public struct RawEntities: Codable {
-    public let annotations: [RawAnnotation]?
-    public let mentions: [RawMention]?
-    public let hashtags: [RawTag]?
-    public let urls: [RawURL]?
+    public var annotations: [RawAnnotation]?
+    public var mentions: [RawMention]?
+    public var hashtags: [RawTag]?
+    public var urls: [RawURL]?
 }
 
 public struct RawMention: Codable {
