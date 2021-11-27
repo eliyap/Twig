@@ -33,7 +33,8 @@ public func hydratedTweets(
     let (data, _) = try await URLSession.shared.data(for: request, delegate: nil)
 
     if DEBUG_DUMP_JSON {
-        print(try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:])
+        let dict: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
+        print(dict as Any)
     }
     
     /// Decode and nil-coalesce.
