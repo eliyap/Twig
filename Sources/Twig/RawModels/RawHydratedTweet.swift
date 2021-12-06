@@ -102,6 +102,7 @@ public struct RawHydratedTweet: Codable {
 }
 
 public struct RawAttachments: Codable, Sendable, Hashable {
+    /// - Note: array order reflects the intended image album order.
     public let media_keys: [String]?
     public let poll_ids: [String]?
 }
