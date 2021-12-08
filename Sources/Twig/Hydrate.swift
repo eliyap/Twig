@@ -44,7 +44,7 @@ public func hydratedTweets(
     var tweets: [RawHydratedTweet]
     if let data = blob.data {
         tweets = data.compactMap(\.item)
-        Swift.debugPrint(tweets.compactMap(\.attachments?.media_keys))
+        Swift.debugPrint("All media keys", tweets.compactMap(\.attachments?.media_keys))
     } else {
         Swift.debugPrint("No data returned for hydrated tweets.")
         tweets = []
