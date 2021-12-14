@@ -10,6 +10,8 @@ import Foundation
 /// The additional information we may obtain for a Tweet Object.
 /// Docs: https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/tweet
 public enum TweetField: String {
+    static let queryKey = "tweet.fields"
+    
     case attachments
     case author_id
     case context_annotations

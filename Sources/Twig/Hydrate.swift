@@ -7,31 +7,53 @@
 
 import Foundation
 
+fileprivate let DEBUG_DUMP_JSON = false
+
 public func hydratedTweets(
     credentials: OAuthCredentials,
     ids: [String],
     fields: Set<TweetField> = [],
-    expansions: Set<TweetExpansion> = []
-) async throws -> ([RawHydratedTweet], [RawIncludeUser]) {
+    expansions: Set<TweetExpansion> = [],
+    mediaFields: Set<MediaField> = []
+) async throws -> ([RawHydratedTweet], [RawIncludeUser], [RawIncludeMedia]) {
     var ids = ids
     if ids.count > 100 {
         Swift.debugPrint("⚠️ WARNING: DISCARDING IDS OVER 100!")
         ids = Array(ids[..<100])
     }
     
-    let request = tweetsRequest(credentials: credentials, ids: ids, fields: fields, expansions: expansions)
+    let request = tweetsRequest(
+        credentials: credentials,
+        ids: ids,
+        fields: fields,
+        expansions: expansions,
+        mediaFields: mediaFields
+    )
     
     let (data, _) = try await URLSession.shared.data(for: request, delegate: nil)
 
+    if DEBUG_DUMP_JSON {
+        let dict: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
+        print(dict as Any)
+    }
+    
     /// Decode and nil-coalesce.
     let decoder = JSONDecoder()
     decoder.dateDecodingStrategy = .formatted(.iso8601withFractionalSeconds)
     let blob = try decoder.decode(RawHydratedBlob.self, from: data)
-    var tweets: [RawHydratedTweet] = blob.data.compactMap(\.item)
+    var tweets: [RawHydratedTweet]
+    if let data = blob.data {
+        tweets = data.compactMap(\.item)
+        Swift.debugPrint("All media keys", tweets.compactMap(\.attachments?.media_keys))
+    } else {
+        Swift.debugPrint("No data returned for hydrated tweets.")
+        tweets = []
+    }
     tweets += blob.includes?.tweets?.compactMap(\.item) ?? []
     let users: [RawIncludeUser] = blob.includes?.users?.compactMap(\.item) ?? []
+    let media: [RawIncludeMedia] = blob.includes?.media?.compactMap(\.item) ?? []
     
-    return (tweets, users)
+    return (tweets, users, media)
 }
 
 /// - Note: manual authentication affords us:
@@ -41,42 +63,25 @@ fileprivate func tweetsRequest(
     credentials: OAuthCredentials,
     ids: [String],
     fields: Set<TweetField> = [],
-    expansions: Set<TweetExpansion> = []
+    expansions: Set<TweetExpansion> = [],
+    mediaFields: Set<MediaField> = []
 ) -> URLRequest {
     /// Only 100 tweets may be requested at once.
     /// Docs: https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/api-reference/get-tweets
     precondition(ids.count <= 100, "Too many IDs!")
     let idCSV = ids.joined(separator: ",")
-    let fieldCSV = fields.map(\.rawValue).joined(separator: ",")
-    let expansionCSV = expansions.map(\.rawValue).joined(separator: ",")
     
     var tweetsURL = "https://api.twitter.com/2/tweets"
     
-    /// OAuth 1.0 Authroization Parameters.
-    /// Docs: https://developer.twitter.com/en/docs/authentication/oauth-1-0a/authorizing-a-request
-    var parameters: [String: String] = [
-        "expansions": expansionCSV,
+    let parameters = signedParameters(method: .GET, url: tweetsURL, credentials: credentials, including: [
+        TweetExpansion.queryKey: expansions.csv,
         "ids": idCSV,
-        "oauth_consumer_key": Keys.consumer,
-        "oauth_nonce": nonce(),
-        "oauth_signature_method": "HMAC-SHA1",
-        "oauth_timestamp": "\(Int(Date().timeIntervalSince1970))",
-        "oauth_token": credentials.oauth_token,
-        "oauth_version": "1.0",
-        "tweet.fields": fieldCSV,
-    ]
-    
-    /// Add cryptographic signature.
-    let signature = oAuth1Signature(
-        method: HTTPMethod.GET,
-        url: tweetsURL,
-        parameters: parameters,
-        consumerSecret: Keys.consumer_secret,
-        oauthSecret: credentials.oauth_token_secret
-    )
-    parameters["oauth_signature"] = signature
+        MediaField.queryKey: mediaFields.csv,
+        TweetField.queryKey: fields.csv,
+    ])
 
-    tweetsURL.append(contentsOf: "?ids=\(idCSV)&tweet.fields=\(fieldCSV)&expansions=\(expansionCSV)")
+    /// Manually construct query string to avoid percent-encoding CSV commas.
+    tweetsURL.append(contentsOf: "?ids=\(idCSV)&tweet.fields=\(fields.csv)&expansions=\(expansions.csv)&\(MediaField.queryKey)=\(mediaFields.csv)")
     
     let url = URL(string: tweetsURL)!
     var request = URLRequest(url: url)

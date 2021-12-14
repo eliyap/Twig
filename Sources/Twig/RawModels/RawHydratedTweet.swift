@@ -8,13 +8,37 @@
 import Foundation
 
 internal struct RawHydratedBlob: Decodable {
-    public let data: [Failable<RawHydratedTweet>]
+    public let data: [Failable<RawHydratedTweet>]?
     public let includes: RawIncludes?
 }
 
 internal struct RawIncludes: Decodable {
     public let tweets: [Failable<RawHydratedTweet>]?
     public let users: [Failable<RawIncludeUser>]?
+    public let media: [Failable<RawIncludeMedia>]?
+}
+
+public struct RawIncludeMedia: Decodable, Hashable, Sendable {
+    public let media_key: String
+    
+    public let type: RawIncludeMediaType
+    
+    /// Pixel Dimensions.
+    public let width: Int
+    public let height: Int
+    
+    public let preview_image_url: String?
+    public let duration_ms: Int?
+    
+    public let alt_text: String?
+    
+    public let url: String?
+}
+
+public enum RawIncludeMediaType: String, Decodable, Hashable, Sendable {
+    case photo
+    case animated_gif
+    case video
 }
 
 /// Docs: https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/user
@@ -30,6 +54,7 @@ public struct RawIncludeUser: Codable, Sendable, Hashable {
     public let username: String
 }
 
+/// Docs: https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/tweet
 public struct RawHydratedTweet: Codable {
     public let id: String
     public let public_metrics: RawPublicMetrics
@@ -41,6 +66,7 @@ public struct RawHydratedTweet: Codable {
     public let referenced_tweets: [RawReferencedTweet]?
     public let in_reply_to_user_id: String?
     public let entities: RawEntities?
+    public let attachments: RawAttachments?
     
     /// The fields we're usually interested in, and which this object expects that you asked for.
     public static let fields: Set<TweetField> = [
@@ -60,9 +86,25 @@ public struct RawHydratedTweet: Codable {
         .author_id,
         .referenced_tweets_id,
         .in_reply_to_user_id,
+        .attachments_media_keys,
         .entities_mentions_username,
         .referenced_tweets_id_author_id,
     ]
+    
+    public static let mediaFields: Set<MediaField> = [
+        .duration_ms,
+        .height,
+        .width,
+        .preview_image_url,
+        .alt_text,
+        .url,
+    ]
+}
+
+public struct RawAttachments: Codable, Sendable, Hashable {
+    /// - Note: array order reflects the intended image album order.
+    public let media_keys: [String]?
+    public let poll_ids: [String]?
 }
 
 public struct RawReferencedTweet: Codable, Sendable {
