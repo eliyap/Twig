@@ -61,12 +61,15 @@ internal func oAuth1Signature(
     consumerSecret: String,
     oauthSecret: String
 ) -> String {
-    (
+    let queryString = parameters
+        .encodedSortedParameterString()
+        .addingPercentEncoding(withAllowedCharacters: .twitter)!
+    return (
         method.rawValue
         + "&\(url.addingPercentEncoding(withAllowedCharacters: .twitter)!)"
         /// > Make sure to percent encode the parameter string.
         /// Docs: https://developer.twitter.com/en/docs/authentication/oauth-1-0a/creating-a-signature
-        + "&\(parameters.encodedSortedParameterString().addingPercentEncoding(withAllowedCharacters: .twitter)!)"
+        + "&\(queryString)"
     ).sha1(with: consumerSecret + "&" + oauthSecret)
     /**
      > ...where the token secret is not yet known ... the signing key should consist of
