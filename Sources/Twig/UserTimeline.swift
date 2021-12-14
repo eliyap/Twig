@@ -41,12 +41,13 @@ internal func userTimelineRequest(
         endpoint: "https://api.twitter.com/2/users/\(userID)/tweets",
         method: .GET,
         credentials: credentials,
-        nonEncoded: [
+        encoded: [
             TweetExpansion.queryKey: RawHydratedTweet.expansions.csv,
             MediaField.queryKey: RawHydratedTweet.mediaFields.csv,
             TweetField.queryKey: RawHydratedTweet.fields.csv,
             "start_time": "DATE:",
             "end_time": endTime?.formatted(with: .iso8601withWholeSeconds),
-        ]
+        ],
+        nonEncoded: [:]
     )
 }
