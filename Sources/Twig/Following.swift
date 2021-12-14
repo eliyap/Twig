@@ -42,17 +42,14 @@ public func requestFollowing(credentials: OAuthCredentials) async throws -> Set<
 /// - Note: Query string authorization did not work. Use header instead.
 /// - Note: Ordering is very particular. Formulate the signature with no parameter string, then append the parameters after.
 internal func follwingRequest(credentials: OAuthCredentials, paginationToken: String?) -> URLRequest {
-    
-    /// Request maximum page size of 1000.
-    var additional = ["max_results": "1000"]
-    if let paginationToken = paginationToken {
-        additional["pagination_token"] = paginationToken
-    }
-    
-    return authorizedRequest(
+    authorizedRequest(
         endpoint: "https://api.twitter.com/2/users/\(credentials.user_id)/following",
         method: .GET,
         credentials: credentials,
-        nonEncoded: additional
+        nonEncoded: [
+            /// Request maximum page size of 1000.
+            "max_results": "1000",
+            "pagination_token": paginationToken,
+        ]
     )
 }
