@@ -37,14 +37,10 @@ internal func userTimelineRequest(
     startTime: Date?,
     endTime: Date?
 ) -> URLRequest {
-    let method: HTTPMethod = .GET
-    let expansions = RawHydratedTweet.expansions
-    let mediaFields = RawHydratedTweet.mediaFields
-    var userTimelineURL = "https://api.twitter.com/2/users/\(userID)/tweets"
-    
     var extraArgs: [String: String] = [
-        TweetExpansion.queryKey: expansions.csv,
-        MediaField.queryKey: mediaFields.csv,
+        TweetExpansion.queryKey: RawHydratedTweet.expansions.csv,
+        MediaField.queryKey: RawHydratedTweet.mediaFields.csv,
+        TweetField.queryKey: RawHydratedTweet.fields.csv,
     ]
     if let startTime = startTime {
         extraArgs["start_time"] = DateFormatter.iso8601withWholeSeconds.string(from: startTime)
@@ -53,15 +49,10 @@ internal func userTimelineRequest(
         extraArgs["end_time"] = DateFormatter.iso8601withWholeSeconds.string(from: endTime)
     }
     
-    let parameters = signedParameters(method: method, url: userTimelineURL, credentials: credentials, including: extraArgs)
-    
-    /// Manually construct query string to avoid percent-encoding CSV commas.
-    userTimelineURL.append("?\(TweetExpansion.queryKey)=\(expansions.csv)&\(MediaField.queryKey)=\(mediaFields.csv)")
-    
-    let url = URL(string: userTimelineURL)!
-    var request = URLRequest(url: url)
-    request.httpMethod = method.rawValue
-    request.setValue("OAuth \(parameters.headerString())", forHTTPHeaderField: "authorization")
-    
-    return request
+    return authorizedRequest(
+        endpoint: "https://api.twitter.com/2/users/\(userID)/tweets",
+        method: .GET,
+        credentials: credentials,
+        nonEncoded: extraArgs
+    )
 }
