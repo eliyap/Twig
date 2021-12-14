@@ -26,7 +26,7 @@ public func requestFollowing(credentials: OAuthCredentials) async throws -> Set<
         if let response = response as? HTTPURLResponse {
             if 200..<300 ~= response.statusCode { /* ok! */}
             else {
-                Swift.debugPrint("Tweet request returned with status code \(response.statusCode)")
+                Swift.debugPrint("Following request returned with status code \(response.statusCode)")
             }
         }
         
