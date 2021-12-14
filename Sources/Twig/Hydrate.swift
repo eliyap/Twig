@@ -30,8 +30,15 @@ public func hydratedTweets(
         mediaFields: mediaFields
     )
     
-    let (data, _) = try await URLSession.shared.data(for: request, delegate: nil)
+    let (data, response) = try await URLSession.shared.data(for: request, delegate: nil)
 
+    if let response = response as? HTTPURLResponse {
+        if 200..<300 ~= response.statusCode { /* ok! */}
+        else {
+            Swift.debugPrint("Tweet request returned with status code \(response.statusCode)")
+        }
+    }
+    
     if DEBUG_DUMP_JSON {
         let dict: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
         print(dict as Any)
@@ -69,26 +76,37 @@ fileprivate func tweetsRequest(
     /// Only 100 tweets may be requested at once.
     /// Docs: https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/api-reference/get-tweets
     precondition(ids.count <= 100, "Too many IDs!")
-    let idCSV = ids.joined(separator: ",")
-    
+//    let idCSV = ids.joined(separator: ",")
+//
     var tweetsURL = "https://api.twitter.com/2/tweets"
+//
+//    let parameters = signedParameters(method: .GET, url: tweetsURL, credentials: credentials, including: [
+//        TweetExpansion.queryKey: expansions.csv,
+//        "ids": idCSV,
+//        MediaField.queryKey: mediaFields.csv,
+//        TweetField.queryKey: fields.csv,
+//    ])
+//
+//    /// Manually construct query string to avoid percent-encoding CSV commas.
+//    tweetsURL.append(contentsOf: "?ids=\(idCSV)&tweet.fields=\(fields.csv)&expansions=\(expansions.csv)&\(MediaField.queryKey)=\(mediaFields.csv)")
+//
+//    let url = URL(string: tweetsURL)!
+//    var request = URLRequest(url: url)
+//
+//    request.setValue("OAuth \(parameters.headerString())", forHTTPHeaderField: "authorization")
+//
+//    return request
     
-    let parameters = signedParameters(method: .GET, url: tweetsURL, credentials: credentials, including: [
-        TweetExpansion.queryKey: expansions.csv,
-        "ids": idCSV,
-        MediaField.queryKey: mediaFields.csv,
-        TweetField.queryKey: fields.csv,
-    ])
-
-    /// Manually construct query string to avoid percent-encoding CSV commas.
-    tweetsURL.append(contentsOf: "?ids=\(idCSV)&tweet.fields=\(fields.csv)&expansions=\(expansions.csv)&\(MediaField.queryKey)=\(mediaFields.csv)")
-    
-    let url = URL(string: tweetsURL)!
-    var request = URLRequest(url: url)
-    
-    request.setValue("OAuth \(parameters.headerString())", forHTTPHeaderField: "authorization")
-    
-    return request
+    return authorizedRequest(
+        endpoint: tweetsURL,
+        method: .GET,
+        credentials: credentials,
+        nonEncoded: [
+            TweetExpansion.queryKey: expansions.csv,
+            "ids": ids.joined(separator: ","),
+            MediaField.queryKey: mediaFields.csv,
+            TweetField.queryKey: fields.csv,
+        ])
 }
 
 internal func authorizedRequest(endpoint: String, method: HTTPMethod, credentials: OAuthCredentials, nonEncoded: [String: String]) -> URLRequest {
