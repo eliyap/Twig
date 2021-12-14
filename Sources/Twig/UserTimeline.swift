@@ -45,7 +45,7 @@ internal func userTimelineRequest(
             TweetExpansion.queryKey: RawHydratedTweet.expansions.csv,
             MediaField.queryKey: RawHydratedTweet.mediaFields.csv,
             TweetField.queryKey: RawHydratedTweet.fields.csv,
-            "start_time": startTime?.formatted(with: .iso8601withWholeSeconds),
+            "start_time": "DATE:",
             "end_time": endTime?.formatted(with: .iso8601withWholeSeconds),
         ]
     )
