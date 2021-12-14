@@ -66,7 +66,7 @@ internal func oAuth1Signature(
         + "&\(url.addingPercentEncoding(withAllowedCharacters: .twitter)!)"
         /// > Make sure to percent encode the parameter string.
         /// Docs: https://developer.twitter.com/en/docs/authentication/oauth-1-0a/creating-a-signature
-        + "&\(parameters.parameterString().addingPercentEncoding(withAllowedCharacters: .twitter)!)"
+        + "&\(parameters.encodedSortedParameterString().addingPercentEncoding(withAllowedCharacters: .twitter)!)"
     ).sha1(with: consumerSecret + "&" + oauthSecret)
     /**
      > ...where the token secret is not yet known ... the signing key should consist of
@@ -76,7 +76,7 @@ internal func oAuth1Signature(
 }
 
 internal extension Dictionary where Key == String, Value == String {
-    func parameterString() -> String {
+    func encodedSortedParameterString() -> String {
         self
             .unsafePercentEncoded()
             .keySorted()

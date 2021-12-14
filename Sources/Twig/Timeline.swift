@@ -52,7 +52,7 @@ internal func timelineRequest(credentials: OAuthCredentials, sinceID: String?, m
     let parameters = signedParameters(method: method, url: timelineURL, credentials: credentials, including: extraArgs)
     
     /// Formulate request.
-    timelineURL.append(contentsOf: "?\(parameters.parameterString())")
+    timelineURL.append(contentsOf: "?\(parameters.encodedSortedParameterString())")
     let url = URL(string: timelineURL)!
     var request = URLRequest(url: url)
     request.httpMethod = method.rawValue

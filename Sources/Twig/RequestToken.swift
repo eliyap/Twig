@@ -53,7 +53,7 @@ public func requestToken() async throws -> OAuthRequestCredentials? {
     let parameters = signedParameters(method: .POST, url: tokenURL, credentials: nil)
     
     /// Add parameters in query string.
-    tokenURL.append(contentsOf: "?\(parameters.parameterString())")
+    tokenURL.append(contentsOf: "?\(parameters.encodedSortedParameterString())")
     
     guard let url = URL(string: tokenURL) else {
         throw TwigError.invalidURL
