@@ -27,6 +27,7 @@ public func hydratedTweets(
         endpoint: endpoint,
         method: .GET,
         credentials: credentials,
+        encoded: [:],
         nonEncoded: [
             TweetExpansion.queryKey: expansions.csv,
             "ids": ids.joined(separator: ","),
@@ -41,6 +42,8 @@ public func hydratedTweets(
         if 200..<300 ~= response.statusCode { /* ok! */}
         else {
             Swift.debugPrint("Tweet request returned with status code \(response.statusCode)")
+            let dict: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
+            Swift.debugPrint(dict as Any)
         }
     }
     
@@ -68,7 +71,13 @@ public func hydratedTweets(
     return (tweets, users, media)
 }
 
-internal func authorizedRequest(endpoint: String, method: HTTPMethod, credentials: OAuthCredentials, nonEncoded: [String: String?]) -> URLRequest {
+internal func authorizedRequest(
+    endpoint: String,
+    method: HTTPMethod,
+    credentials: OAuthCredentials,
+    encoded: [String: String?],
+    nonEncoded: [String: String?]
+) -> URLRequest {
     /// Be extra sure to discard `nil` values.
     var compacted: [String: String] = [:]
     nonEncoded.forEach{ (k,v) in
