@@ -54,7 +54,10 @@ internal func userTimelineRequest(
     }
     
     let parameters = signedParameters(method: method, url: userTimelineURL, credentials: credentials, including: extraArgs)
+    
+    /// Manually construct query string to avoid percent-encoding CSV commas.
     userTimelineURL.append("?\(TweetExpansion.queryKey)=\(expansions.csv)&\(MediaField.queryKey)=\(mediaFields.csv)")
+    
     let url = URL(string: userTimelineURL)!
     var request = URLRequest(url: url)
     request.httpMethod = method.rawValue
