@@ -10,6 +10,8 @@ import Foundation
 /// Key to request expansion of a ``TweetField`` into a complete object.
 /// Docs: https://developer.twitter.com/en/docs/twitter-api/expansions
 public enum TweetExpansion: String {
+    static let queryKey = "expansions"
+    
     case author_id = "author_id"
     case referenced_tweets_id = "referenced_tweets.id"
     case in_reply_to_user_id = "in_reply_to_user_id"

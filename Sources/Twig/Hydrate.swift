@@ -77,10 +77,10 @@ fileprivate func tweetsRequest(
     var tweetsURL = "https://api.twitter.com/2/tweets"
     
     let parameters = signedParameters(method: .GET, url: tweetsURL, credentials: credentials, including: [
-        "expansions": expansionCSV,
+        TweetExpansion.queryKey: expansionCSV,
         "ids": idCSV,
         MediaField.queryKey: mediaCSV,
-        "tweet.fields": fieldCSV,
+        TweetField.queryKey: fieldCSV,
     ])
 
     tweetsURL.append(contentsOf: "?ids=\(idCSV)&tweet.fields=\(fieldCSV)&expansions=\(expansionCSV)&\(MediaField.queryKey)=\(mediaCSV)")
