@@ -13,7 +13,7 @@ extension Collection where Element: CSVable {
         map{"\($0.rawValue)"}.joined(separator: ",")
     }
 }
-let x = Set<String>()
+
 extension TweetExpansion: CSVable { }
 extension MediaField: CSVable { }
 extension TweetField: CSVable { }
