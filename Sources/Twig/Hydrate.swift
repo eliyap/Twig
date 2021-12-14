@@ -70,20 +70,18 @@ fileprivate func tweetsRequest(
     /// Docs: https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/api-reference/get-tweets
     precondition(ids.count <= 100, "Too many IDs!")
     let idCSV = ids.joined(separator: ",")
-    let fieldCSV = fields.map(\.rawValue).joined(separator: ",")
-    let expansionCSV = expansions.map(\.rawValue).joined(separator: ",")
-    let mediaCSV = mediaFields.map(\.rawValue).joined(separator: ",")
     
     var tweetsURL = "https://api.twitter.com/2/tweets"
     
     let parameters = signedParameters(method: .GET, url: tweetsURL, credentials: credentials, including: [
-        TweetExpansion.queryKey: expansionCSV,
+        TweetExpansion.queryKey: expansions.csv,
         "ids": idCSV,
-        MediaField.queryKey: mediaCSV,
-        TweetField.queryKey: fieldCSV,
+        MediaField.queryKey: mediaFields.csv,
+        TweetField.queryKey: fields.csv,
     ])
 
-    tweetsURL.append(contentsOf: "?ids=\(idCSV)&tweet.fields=\(fieldCSV)&expansions=\(expansionCSV)&\(MediaField.queryKey)=\(mediaCSV)")
+    /// Manually construct query string to avoid percent-encoding CSV commas.
+    tweetsURL.append(contentsOf: "?ids=\(idCSV)&tweet.fields=\(fields.csv)&expansions=\(expansions.csv)&\(MediaField.queryKey)=\(mediaFields.csv)")
     
     let url = URL(string: tweetsURL)!
     var request = URLRequest(url: url)
