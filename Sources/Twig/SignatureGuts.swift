@@ -19,27 +19,29 @@ func signedParameters(
     method: HTTPMethod,
     url: String,
     credentials: OAuthCredentials?,
-    including additionalParameters: [String: String] = [:]
+    encoded: [String: String] = [:],
+    nonEncoded: [String: String] = [:]
 ) -> [String: String] {
     /// OAuth 1.0 Authroization Parameters.
     /// Docs: https://developer.twitter.com/en/docs/authentication/oauth-1-0a/authorizing-a-request
-    var parameters: [String: String] = [
+    var encoded: [String: String] = [
         "oauth_consumer_key": Keys.consumer,
         "oauth_nonce": nonce(),
         "oauth_signature_method": "HMAC-SHA1",
         "oauth_timestamp": "\(Int(Date().timeIntervalSince1970))",
         "oauth_version": "1.0",
-    ].merging(additionalParameters, uniquingKeysWith: {(curr, _) in curr})
+    ].merging(encoded, uniquingKeysWith: {(curr, _) in curr})
     
     if let credentials = credentials {
-        parameters["oauth_token"] = credentials.oauth_token
+        encoded["oauth_token"] = credentials.oauth_token
     }
     
     /// Add cryptographic signature.
     let signature = oAuth1Signature(
         method: method,
         url: url,
-        parameters: parameters,
+        encoded: encoded,
+        nonEncoded: nonEncoded,
         consumerSecret: Keys.consumer_secret,
         /**
          > ...where the token secret is not yet known ... the signing key should consist of
@@ -48,21 +50,25 @@ func signedParameters(
          */
         oauthSecret: credentials?.oauth_token_secret ?? ""
     )
-    parameters["oauth_signature"] = signature
+    encoded["oauth_signature"] = signature
     
-    return parameters
+    return encoded
 }
 
 // MARK: - OAuth Guts
 internal func oAuth1Signature(
     method: HTTPMethod,
     url: String,
-    parameters: [String: String],
+    encoded: [String: String] = [:],
+    nonEncoded: [String: String] = [:],
     consumerSecret: String,
     oauthSecret: String
 ) -> String {
-    let queryString = parameters
-        .encodedSortedParameterString()
+    let queryString = encoded
+        .unsafePercentEncoded()
+        .merging(nonEncoded, uniquingKeysWith: {curr, _ in curr })
+        .keySorted()
+        .parameterString()
         .addingPercentEncoding(withAllowedCharacters: .twitter)!
     return (
         method.rawValue

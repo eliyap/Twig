@@ -77,7 +77,7 @@ internal func authorizedRequest(endpoint: String, method: HTTPMethod, credential
         }
     }
     
-    let parameters = signedParameters(method: .GET, url: endpoint, credentials: credentials, including: compacted)
+    let parameters = signedParameters(method: .GET, url: endpoint, credentials: credentials, encoded: compacted)
     
     /// Manually construct query string to avoid percent-encoding CSV commas.
     let queryString = nonEncoded.isEmpty

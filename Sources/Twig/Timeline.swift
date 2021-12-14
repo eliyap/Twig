@@ -49,7 +49,7 @@ internal func timelineRequest(credentials: OAuthCredentials, sinceID: String?, m
     if let maxID = maxID {
         extraArgs["max_id"] = maxID
     }
-    let parameters = signedParameters(method: method, url: timelineURL, credentials: credentials, including: extraArgs)
+    let parameters = signedParameters(method: method, url: timelineURL, credentials: credentials, encoded: extraArgs)
     
     /// Formulate request.
     timelineURL.append(contentsOf: "?\(parameters.encodedSortedParameterString())")
