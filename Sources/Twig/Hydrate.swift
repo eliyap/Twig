@@ -117,7 +117,7 @@ internal func authorizedRequest(endpoint: String, method: HTTPMethod, credential
         ? ""
         : "?" + nonEncoded.map { (key, value) in "\(key)=\(value)" }.joined(separator: "&")
     
-    let url = URL(string: endpoint + "?" + queryString)!
+    let url = URL(string: endpoint + queryString)!
     
     /// Set OAuth authorization header.
     var request = URLRequest(url: url)
