@@ -76,30 +76,12 @@ fileprivate func tweetsRequest(
     
     var tweetsURL = "https://api.twitter.com/2/tweets"
     
-    /// OAuth 1.0 Authroization Parameters.
-    /// Docs: https://developer.twitter.com/en/docs/authentication/oauth-1-0a/authorizing-a-request
-    var parameters: [String: String] = [
+    let parameters = signedParameters(method: .GET, url: tweetsURL, credentials: credentials, including: [
         "expansions": expansionCSV,
         "ids": idCSV,
         MediaField.queryKey: mediaCSV,
-        "oauth_consumer_key": Keys.consumer,
-        "oauth_nonce": nonce(),
-        "oauth_signature_method": "HMAC-SHA1",
-        "oauth_timestamp": "\(Int(Date().timeIntervalSince1970))",
-        "oauth_token": credentials.oauth_token,
-        "oauth_version": "1.0",
         "tweet.fields": fieldCSV,
-    ]
-    
-    /// Add cryptographic signature.
-    let signature = oAuth1Signature(
-        method: HTTPMethod.GET,
-        url: tweetsURL,
-        parameters: parameters,
-        consumerSecret: Keys.consumer_secret,
-        oauthSecret: credentials.oauth_token_secret
-    )
-    parameters["oauth_signature"] = signature
+    ])
 
     tweetsURL.append(contentsOf: "?ids=\(idCSV)&tweet.fields=\(fieldCSV)&expansions=\(expansionCSV)&\(MediaField.queryKey)=\(mediaCSV)")
     
