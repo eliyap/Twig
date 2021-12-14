@@ -26,7 +26,7 @@ public func requestFollowing(credentials: OAuthCredentials) async throws -> Set<
         users.formUnion(items.data)
         paginationToken = items.meta.next_token
     } while (paginationToken != nil)
-    
+     
     return users
 }
 
