@@ -34,6 +34,7 @@ public func timelinePublisher(credentials: OAuthCredentials, sinceID: String?, m
 // MARK: - Guts
 /// Docs: https://developer.twitter.com/en/docs/twitter-api/v1/tweets/timelines/guides/working-with-timelines
 internal func timelineRequest(credentials: OAuthCredentials, sinceID: String?, maxID: String?) -> URLRequest {
+    let method: HTTPMethod = .GET
     var timelineURL = "https://api.twitter.com/1.1/statuses/home_timeline.json"
     
     /**
@@ -48,13 +49,13 @@ internal func timelineRequest(credentials: OAuthCredentials, sinceID: String?, m
     if let maxID = maxID {
         extraArgs["max_id"] = maxID
     }
-    let parameters = signedParameters(method: .GET, url: timelineURL, credentials: credentials, including: extraArgs)
+    let parameters = signedParameters(method: method, url: timelineURL, credentials: credentials, including: extraArgs)
     
     /// Formulate request.
     timelineURL.append(contentsOf: "?\(parameters.parameterString())")
     let url = URL(string: timelineURL)!
     var request = URLRequest(url: url)
-    request.httpMethod = HTTPMethod.GET.rawValue
+    request.httpMethod = method.rawValue
     
     return request
 }
