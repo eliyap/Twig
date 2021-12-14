@@ -90,3 +90,21 @@ fileprivate func tweetsRequest(
     
     return request
 }
+
+internal func authorizedRequest(endpoint: String, method: HTTPMethod, credentials: OAuthCredentials, nonEncoded: [String: String]) -> URLRequest {
+    let parameters = signedParameters(method: .GET, url: endpoint, credentials: credentials, including: nonEncoded)
+    
+    /// Manually construct query string to avoid percent-encoding CSV commas.
+    let queryString = nonEncoded.isEmpty
+        ? ""
+        : "?" + nonEncoded.map { (key, value) in "\(key)=\(value)" }.joined(separator: "&")
+    
+    let url = URL(string: endpoint + "?" + queryString)!
+    
+    /// Set OAuth authorization header.
+    var request = URLRequest(url: url)
+    request.httpMethod = method.rawValue
+    request.setValue("OAuth \(parameters.headerString())", forHTTPHeaderField: "authorization")
+    
+    return request
+}
