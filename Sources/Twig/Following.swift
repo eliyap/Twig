@@ -21,7 +21,15 @@ public func requestFollowing(credentials: OAuthCredentials) async throws -> Set<
     var paginationToken: String? = nil
     repeat {
         let request = follwingRequest(credentials: credentials, paginationToken: paginationToken)
-        let (data, _): (Data, URLResponse) = try await URLSession.shared.data(for: request, delegate: nil)
+        let (data, response): (Data, URLResponse) = try await URLSession.shared.data(for: request, delegate: nil)
+        
+        if let response = response as? HTTPURLResponse {
+            if 200..<300 ~= response.statusCode { /* ok! */}
+            else {
+                Swift.debugPrint("Tweet request returned with status code \(response.statusCode)")
+            }
+        }
+        
         let items = try decoder.decode(RawFollowingResponse.self, from: data)
         users.formUnion(items.data)
         paginationToken = items.meta.next_token
