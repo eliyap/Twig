@@ -41,14 +41,14 @@ internal func timelineRequest(credentials: OAuthCredentials, sinceID: String?, m
      Especially important because `home_timeline` API limit is 15 reqeuests per 15 mins.
      Docs: https://developer.twitter.com/en/docs/twitter-api/v1/tweets/timelines/api-reference/get-statuses-home_timeline
      */
-    var additional: [String: String] = ["count":"200"]
+    var extraArgs: [String: String] = ["count":"200"]
     if let sinceID = sinceID {
-        additional["since_id"] = sinceID
+        extraArgs["since_id"] = sinceID
     }
     if let maxID = maxID {
-        additional["max_id"] = maxID
+        extraArgs["max_id"] = maxID
     }
-    let parameters = signedParameters(method: .GET, url: timelineURL, credentials: credentials, including: additional)
+    let parameters = signedParameters(method: .GET, url: timelineURL, credentials: credentials, including: extraArgs)
     
     /// Formulate request.
     timelineURL.append(contentsOf: "?\(parameters.parameterString())")
