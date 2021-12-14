@@ -29,3 +29,10 @@ extension DateFormatter {
         return formatter
     }()
 }
+
+extension Date {
+    /// Reverse the calling convention.
+    func formatted(with formatter: DateFormatter) -> String {
+        formatter.string(from: self)
+    }
+}
