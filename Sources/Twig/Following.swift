@@ -49,15 +49,10 @@ internal func follwingRequest(credentials: OAuthCredentials, paginationToken: St
         additional["pagination_token"] = paginationToken
     }
     
-    /// Formulate request.
-    var followingURL = "https://api.twitter.com/2/users/\(credentials.user_id)/following"
-    let parameters = signedParameters(method: .GET, url: followingURL, credentials: credentials, including: additional)
-    followingURL.append(contentsOf: "?\(additional.parameterString())")
-    
-    let url = URL(string: followingURL)!
-    var request = URLRequest(url: url)
-    request.httpMethod = HTTPMethod.GET.rawValue
-    request.setValue("OAuth \(parameters.headerString())", forHTTPHeaderField: "authorization")
-    
-    return request
+    return authorizedRequest(
+        endpoint: "https://api.twitter.com/2/users/\(credentials.user_id)/following",
+        method: .GET,
+        credentials: credentials,
+        nonEncoded: additional
+    )
 }
