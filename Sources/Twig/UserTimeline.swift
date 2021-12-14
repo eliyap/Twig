@@ -7,7 +7,7 @@
 
 import Foundation
 
-fileprivate let DEBUG_DUMP_JSON = false
+fileprivate let DEBUG_DUMP_JSON = true
 
 public func userTimeline(
     userID: String,
@@ -38,9 +38,14 @@ internal func userTimelineRequest(
     endTime: Date?
 ) -> URLRequest {
     let method: HTTPMethod = .GET
+    let expansions = RawHydratedTweet.expansions
+    let mediaFields = RawHydratedTweet.mediaFields
     var userTimelineURL = "https://api.twitter.com/2/users/\(userID)/tweets"
     
-    var extraArgs: [String: String] = [:]
+    var extraArgs: [String: String] = [
+        TweetExpansion.queryKey: expansions.csv,
+        MediaField.queryKey: mediaFields.csv,
+    ]
     if let startTime = startTime {
         extraArgs["start_time"] = DateFormatter.iso8601withWholeSeconds.string(from: startTime)
     }
@@ -49,10 +54,11 @@ internal func userTimelineRequest(
     }
     
     let parameters = signedParameters(method: method, url: userTimelineURL, credentials: credentials, including: extraArgs)
-    userTimelineURL.append(contentsOf: "?\(parameters.parameterString())")
+    userTimelineURL.append("?\(TweetExpansion.queryKey)=\(expansions.csv)&\(MediaField.queryKey)=\(mediaFields.csv)")
     let url = URL(string: userTimelineURL)!
     var request = URLRequest(url: url)
     request.httpMethod = method.rawValue
+    request.setValue("OAuth \(parameters.headerString())", forHTTPHeaderField: "authorization")
     
     return request
 }
