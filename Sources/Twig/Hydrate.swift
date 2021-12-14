@@ -68,13 +68,23 @@ public func hydratedTweets(
     return (tweets, users, media)
 }
 
-internal func authorizedRequest(endpoint: String, method: HTTPMethod, credentials: OAuthCredentials, nonEncoded: [String: String]) -> URLRequest {
-    let parameters = signedParameters(method: .GET, url: endpoint, credentials: credentials, including: nonEncoded)
+internal func authorizedRequest(endpoint: String, method: HTTPMethod, credentials: OAuthCredentials, nonEncoded: [String: String?]) -> URLRequest {
+    /// Be extra sure to discard `nil` values.
+    var compacted: [String: String] = [:]
+    nonEncoded.forEach{ (k,v) in
+        if let v = v {
+            compacted[k] = v
+        }
+    }
+    
+    let parameters = signedParameters(method: .GET, url: endpoint, credentials: credentials, including: compacted)
     
     /// Manually construct query string to avoid percent-encoding CSV commas.
     let queryString = nonEncoded.isEmpty
         ? ""
-        : "?" + nonEncoded.map { (key, value) in "\(key)=\(value)" }.joined(separator: "&")
+        : "?" + compacted
+            .map { (key, value) in "\(key)=\(value)" }
+            .joined(separator: "&")
     
     let url = URL(string: endpoint + queryString)!
     
