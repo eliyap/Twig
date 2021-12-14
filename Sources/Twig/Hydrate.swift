@@ -86,6 +86,8 @@ internal func authorizedRequest(endpoint: String, method: HTTPMethod, credential
             .map { (key, value) in "\(key)=\(value)" }
             .joined(separator: "&")
     
+    Swift.debugPrint(queryString)
+    
     let url = URL(string: endpoint + queryString)!
     
     /// Set OAuth authorization header.
