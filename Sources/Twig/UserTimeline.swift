@@ -37,22 +37,16 @@ internal func userTimelineRequest(
     startTime: Date?,
     endTime: Date?
 ) -> URLRequest {
-    var extraArgs: [String: String] = [
-        TweetExpansion.queryKey: RawHydratedTweet.expansions.csv,
-        MediaField.queryKey: RawHydratedTweet.mediaFields.csv,
-        TweetField.queryKey: RawHydratedTweet.fields.csv,
-    ]
-    if let startTime = startTime {
-        extraArgs["start_time"] = DateFormatter.iso8601withWholeSeconds.string(from: startTime)
-    }
-    if let endTime = endTime {
-        extraArgs["end_time"] = DateFormatter.iso8601withWholeSeconds.string(from: endTime)
-    }
-    
-    return authorizedRequest(
+    authorizedRequest(
         endpoint: "https://api.twitter.com/2/users/\(userID)/tweets",
         method: .GET,
         credentials: credentials,
-        nonEncoded: extraArgs
+        nonEncoded: [
+            TweetExpansion.queryKey: RawHydratedTweet.expansions.csv,
+            MediaField.queryKey: RawHydratedTweet.mediaFields.csv,
+            TweetField.queryKey: RawHydratedTweet.fields.csv,
+            "start_time": startTime?.formatted(with: .iso8601withWholeSeconds),
+            "end_time": endTime?.formatted(with: .iso8601withWholeSeconds),
+        ]
     )
 }
