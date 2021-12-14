@@ -37,28 +37,16 @@ internal func userTimelineRequest(
     startTime: Date?,
     endTime: Date?
 ) -> URLRequest {
-    let method: HTTPMethod = .GET
-    let expansions = RawHydratedTweet.expansions
-    let mediaFields = RawHydratedTweet.mediaFields
-    var userTimelineURL = "https://api.twitter.com/2/users/\(userID)/tweets"
-    
-    var extraArgs: [String: String] = [
-        TweetExpansion.queryKey: expansions.csv,
-        MediaField.queryKey: mediaFields.csv,
-    ]
-    if let startTime = startTime {
-        extraArgs["start_time"] = DateFormatter.iso8601withWholeSeconds.string(from: startTime)
-    }
-    if let endTime = endTime {
-        extraArgs["end_time"] = DateFormatter.iso8601withWholeSeconds.string(from: endTime)
-    }
-    
-    let parameters = signedParameters(method: method, url: userTimelineURL, credentials: credentials, including: extraArgs)
-    userTimelineURL.append("?\(TweetExpansion.queryKey)=\(expansions.csv)&\(MediaField.queryKey)=\(mediaFields.csv)")
-    let url = URL(string: userTimelineURL)!
-    var request = URLRequest(url: url)
-    request.httpMethod = method.rawValue
-    request.setValue("OAuth \(parameters.headerString())", forHTTPHeaderField: "authorization")
-    
-    return request
+    authorizedRequest(
+        endpoint: "https://api.twitter.com/2/users/\(userID)/tweets",
+        method: .GET,
+        credentials: credentials,
+        nonEncoded: [
+            TweetExpansion.queryKey: RawHydratedTweet.expansions.csv,
+            MediaField.queryKey: RawHydratedTweet.mediaFields.csv,
+            TweetField.queryKey: RawHydratedTweet.fields.csv,
+            "start_time": startTime?.formatted(with: .iso8601withWholeSeconds),
+            "end_time": endTime?.formatted(with: .iso8601withWholeSeconds),
+        ]
+    )
 }
