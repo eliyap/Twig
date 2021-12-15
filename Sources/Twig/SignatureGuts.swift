@@ -115,7 +115,7 @@ internal extension Dictionary where Key == String, Value == String {
     }
 }
 
-fileprivate extension OrderedDictionary where Key: CustomStringConvertible, Value: CustomStringConvertible {
+internal extension OrderedDictionary where Key: CustomStringConvertible, Value: CustomStringConvertible {
     /// Encode key-value pairs as a parameter string.
     func parameterString() -> String {
         self
