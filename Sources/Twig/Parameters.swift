@@ -70,9 +70,10 @@ internal struct RequestParameters {
         if encodable.isEmpty && nonEncodable.isEmpty {
             return ""
         } else {
-            return "?" + encodable.compacted
-                .merging(nonEncodable.compacted, uniquingKeysWith: Self.Discard)
-                .keySorted().parameterString()
+            return "?"
+                + encodable.compacted.unsafePercentEncoded()
+                    .merging(nonEncodable.compacted, uniquingKeysWith: Self.Discard)
+                    .keySorted().parameterString()
         }
     }
 }
