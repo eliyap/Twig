@@ -23,14 +23,14 @@ internal struct RequestParameters {
         self.nonEncodable = nonEncodable
     }
     
-    internal static let Discard: (String, String) -> String = { (x, _) in
+    internal static func Discard<T>(x: T, _: T) -> T {
         Swift.debugPrint("[WARNING], duplicate key: \(x)")
         return x
     }
     
     public mutating func merge(_ other: Self) {
-        encodable.merge(other.encodable) { (x, _) in x }
-        nonEncodable.merge(other.nonEncodable) { (x, _) in x }
+        encodable.merge(other.encodable, uniquingKeysWith: Self.Discard)
+        nonEncodable.merge(other.nonEncodable, uniquingKeysWith: Self.Discard)
     }
     
     /// Parameters used for OAuth 1.0 Authentication.
