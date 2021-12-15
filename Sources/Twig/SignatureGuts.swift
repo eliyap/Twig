@@ -21,7 +21,7 @@ func signedParameters(
     credentials: OAuthCredentials?,
     parameters: RequestParameters
 ) -> [String: String] {
-    var parameters = parameters.merged(.OAuth)
+    var parameters = parameters.merged(.OAuth())
     if let credentials = credentials {
         parameters.encodable["oauth_token"] = credentials.oauth_token
     }
@@ -41,7 +41,7 @@ func signedParameters(
     )
     parameters.encodable["oauth_signature"] = signature
     
-    return parameters.dict()
+    return parameters.encodable.compacted
 }
 
 // MARK: - OAuth Guts
