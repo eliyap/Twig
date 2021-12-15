@@ -27,13 +27,12 @@ public func hydratedTweets(
         endpoint: endpoint,
         method: .GET,
         credentials: credentials,
-        encoded: [:],
-        nonEncoded: [
+        encoded: [
             TweetExpansion.queryKey: expansions.csv,
             "ids": ids.joined(separator: ","),
             MediaField.queryKey: mediaFields.csv,
-            TweetField.queryKey: fields.csv,
-        ]
+            TweetField.queryKey: fields.csv,],
+        nonEncoded: [:]
     )
     
     let (data, response) = try await URLSession.shared.data(for: request, delegate: nil)
