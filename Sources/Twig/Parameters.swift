@@ -70,7 +70,9 @@ internal struct RequestParameters {
         if encodable.isEmpty && nonEncodable.isEmpty {
             return ""
         } else {
-            return "?" + dict().keySorted().parameterString()
+            return "?" + encodable.compacted
+                .merging(nonEncodable.compacted, uniquingKeysWith: Self.Discard)
+                .keySorted().parameterString()
         }
     }
 }
