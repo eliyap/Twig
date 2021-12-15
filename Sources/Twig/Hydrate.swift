@@ -27,12 +27,12 @@ public func hydratedTweets(
         endpoint: endpoint,
         method: .GET,
         credentials: credentials,
-        nonEncoded: [
+        parameters: RequestParameters(encodable: [
             TweetExpansion.queryKey: expansions.csv,
             "ids": ids.joined(separator: ","),
             MediaField.queryKey: mediaFields.csv,
             TweetField.queryKey: fields.csv,
-        ]
+        ])
     )
     
     let (data, response) = try await URLSession.shared.data(for: request, delegate: nil)
@@ -41,6 +41,8 @@ public func hydratedTweets(
         if 200..<300 ~= response.statusCode { /* ok! */}
         else {
             Swift.debugPrint("Tweet request returned with status code \(response.statusCode)")
+            let dict: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
+            Swift.debugPrint(dict as Any)
         }
     }
     
@@ -68,30 +70,25 @@ public func hydratedTweets(
     return (tweets, users, media)
 }
 
-internal func authorizedRequest(endpoint: String, method: HTTPMethod, credentials: OAuthCredentials, nonEncoded: [String: String?]) -> URLRequest {
-    /// Be extra sure to discard `nil` values.
-    var compacted: [String: String] = [:]
-    nonEncoded.forEach{ (k,v) in
-        if let v = v {
-            compacted[k] = v
-        }
-    }
+internal func authorizedRequest(
+    endpoint: String,
+    method: HTTPMethod,
+    credentials: OAuthCredentials,
+    parameters: RequestParameters
+) -> URLRequest {
+    let parameterDict = signedParameters(
+        method: .GET,
+        url: endpoint,
+        credentials: credentials,
+        parameters: parameters
+    )
     
-    let parameters = signedParameters(method: .GET, url: endpoint, credentials: credentials, including: compacted)
-    
-    /// Manually construct query string to avoid percent-encoding CSV commas.
-    let queryString = nonEncoded.isEmpty
-        ? ""
-        : "?" + compacted
-            .map { (key, value) in "\(key)=\(value)" }
-            .joined(separator: "&")
-    
-    let url = URL(string: endpoint + queryString)!
+    let url = URL(string: endpoint + parameters.queryString())!
     
     /// Set OAuth authorization header.
     var request = URLRequest(url: url)
     request.httpMethod = method.rawValue
-    request.setValue("OAuth \(parameters.headerString())", forHTTPHeaderField: "authorization")
+    request.setValue("OAuth \(parameterDict.headerString())", forHTTPHeaderField: "authorization")
     
     return request
 }

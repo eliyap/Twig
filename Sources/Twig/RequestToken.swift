@@ -50,10 +50,10 @@ public struct OAuthRequestCredentials {
 public func requestToken() async throws -> OAuthRequestCredentials? {
     var tokenURL = "https://api.twitter.com/oauth/request_token"
     
-    let parameters = signedParameters(method: .POST, url: tokenURL, credentials: nil)
+    let parameters = signedParameters(method: .POST, url: tokenURL, credentials: nil, parameters: .empty)
     
     /// Add parameters in query string.
-    tokenURL.append(contentsOf: "?\(parameters.parameterString())")
+    tokenURL.append(contentsOf: "?\(parameters.encodedSortedParameterString())")
     
     guard let url = URL(string: tokenURL) else {
         throw TwigError.invalidURL

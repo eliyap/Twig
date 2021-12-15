@@ -26,7 +26,7 @@ public func requestFollowing(credentials: OAuthCredentials) async throws -> Set<
         if let response = response as? HTTPURLResponse {
             if 200..<300 ~= response.statusCode { /* ok! */}
             else {
-                Swift.debugPrint("Tweet request returned with status code \(response.statusCode)")
+                Swift.debugPrint("Following request returned with status code \(response.statusCode)")
             }
         }
         
@@ -46,10 +46,10 @@ internal func follwingRequest(credentials: OAuthCredentials, paginationToken: St
         endpoint: "https://api.twitter.com/2/users/\(credentials.user_id)/following",
         method: .GET,
         credentials: credentials,
-        nonEncoded: [
+        parameters: RequestParameters(nonEncodable: [
             /// Request maximum page size of 1000.
             "max_results": "1000",
             "pagination_token": paginationToken,
-        ]
+        ])
     )
 }

@@ -14,7 +14,7 @@ public func accessToken(callbackURL: String) async throws -> OAuthCredentials {
         "oauth_verifier": response.oauth_verifier,
         "oauth_consumer_key": Keys.consumer,
     ]
-    guard let url = URL(string: "https://api.twitter.com/oauth/access_token?\(parameters.parameterString())") else {
+    guard let url = URL(string: "https://api.twitter.com/oauth/access_token?\(parameters.encodedSortedParameterString())") else {
         throw TwigError.invalidURL
     }
     var request = URLRequest(url: url)

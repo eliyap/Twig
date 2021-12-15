@@ -19,20 +19,11 @@ func signedParameters(
     method: HTTPMethod,
     url: String,
     credentials: OAuthCredentials?,
-    including additionalParameters: [String: String] = [:]
+    parameters: RequestParameters
 ) -> [String: String] {
-    /// OAuth 1.0 Authroization Parameters.
-    /// Docs: https://developer.twitter.com/en/docs/authentication/oauth-1-0a/authorizing-a-request
-    var parameters: [String: String] = [
-        "oauth_consumer_key": Keys.consumer,
-        "oauth_nonce": nonce(),
-        "oauth_signature_method": "HMAC-SHA1",
-        "oauth_timestamp": "\(Int(Date().timeIntervalSince1970))",
-        "oauth_version": "1.0",
-    ].merging(additionalParameters, uniquingKeysWith: {(curr, _) in curr})
-    
+    var parameters = parameters.merged(.OAuth())
     if let credentials = credentials {
-        parameters["oauth_token"] = credentials.oauth_token
+        parameters.encodable["oauth_token"] = credentials.oauth_token
     }
     
     /// Add cryptographic signature.
@@ -48,25 +39,25 @@ func signedParameters(
          */
         oauthSecret: credentials?.oauth_token_secret ?? ""
     )
-    parameters["oauth_signature"] = signature
+    parameters.encodable["oauth_signature"] = signature
     
-    return parameters
+    return parameters.encodable.compacted
 }
 
 // MARK: - OAuth Guts
 internal func oAuth1Signature(
     method: HTTPMethod,
     url: String,
-    parameters: [String: String],
+    parameters: RequestParameters,
     consumerSecret: String,
     oauthSecret: String
 ) -> String {
-    (
+    return (
         method.rawValue
         + "&\(url.addingPercentEncoding(withAllowedCharacters: .twitter)!)"
         /// > Make sure to percent encode the parameter string.
         /// Docs: https://developer.twitter.com/en/docs/authentication/oauth-1-0a/creating-a-signature
-        + "&\(parameters.parameterString().addingPercentEncoding(withAllowedCharacters: .twitter)!)"
+        + "&\(parameters.encodedString())"
     ).sha1(with: consumerSecret + "&" + oauthSecret)
     /**
      > ...where the token secret is not yet known ... the signing key should consist of
@@ -76,7 +67,7 @@ internal func oAuth1Signature(
 }
 
 internal extension Dictionary where Key == String, Value == String {
-    func parameterString() -> String {
+    func encodedSortedParameterString() -> String {
         self
             .unsafePercentEncoded()
             .keySorted()
@@ -106,7 +97,7 @@ internal extension Dictionary where Key == String, Value == String {
     }
 }
 
-fileprivate extension OrderedDictionary where Key: CustomStringConvertible, Value: CustomStringConvertible {
+internal extension OrderedDictionary where Key: CustomStringConvertible, Value: CustomStringConvertible {
     /// Encode key-value pairs as a parameter string.
     func parameterString() -> String {
         self
