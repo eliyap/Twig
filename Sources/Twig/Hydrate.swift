@@ -85,14 +85,22 @@ internal func authorizedRequest(
         }
     }
     
-    let parameters = signedParameters(method: .GET, url: endpoint, credentials: credentials, encoded: compacted)
+    let parameters = signedParameters(
+        method: .GET,
+        url: endpoint,
+        credentials: credentials,
+        encoded: encoded.compacted,
+        nonEncoded: nonEncoded.compacted
+    )
     
     /// Manually construct query string to avoid percent-encoding CSV commas.
-    let queryString = nonEncoded.isEmpty
+    let queryString = (nonEncoded.isEmpty && encoded.isEmpty)
         ? ""
-        : "?" + compacted
-            .map { (key, value) in "\(key)=\(value)" }
-            .joined(separator: "&")
+        : (
+            "?"
+            + nonEncoded.compacted.keySorted().parameterString()
+            + encoded.compacted.keySorted().parameterString()
+        )
     
     Swift.debugPrint(queryString)
     
