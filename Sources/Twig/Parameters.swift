@@ -40,13 +40,16 @@ internal struct RequestParameters {
     
     /// Parameters used for OAuth 1.0 Authentication.
     /// Docs: https://developer.twitter.com/en/docs/authentication/oauth-1-0a/authorizing-a-request
-    public static let OAuth: Self = .init(encodable: [
-        "oauth_consumer_key": Keys.consumer,
-        "oauth_nonce": nonce(),
-        "oauth_signature_method": "HMAC-SHA1",
-        "oauth_timestamp": "\(Int(Date().timeIntervalSince1970))",
-        "oauth_version": "1.0",
-    ])
+    public static func OAuth() -> Self {
+        /// Regenerate each time for a unique nonce and timestamp.
+        .init(encodable: [
+            "oauth_consumer_key": Keys.consumer,
+            "oauth_nonce": nonce(),
+            "oauth_signature_method": "HMAC-SHA1",
+            "oauth_timestamp": "\(Int(Date().timeIntervalSince1970))",
+            "oauth_version": "1.0",
+        ])
+    }
     
     /// Merge non-nil values into a string.
     /// Used for composing an OAuth 1.0 signature.
