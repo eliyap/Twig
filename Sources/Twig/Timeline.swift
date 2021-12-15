@@ -37,19 +37,21 @@ internal func timelineRequest(credentials: OAuthCredentials, sinceID: String?, m
     let method: HTTPMethod = .GET
     var timelineURL = "https://api.twitter.com/1.1/statuses/home_timeline.json"
     
-    /**
-     Instead of fetching 20 at a time, fetch the maximum 200 at a time.
-     Especially important because `home_timeline` API limit is 15 reqeuests per 15 mins.
-     Docs: https://developer.twitter.com/en/docs/twitter-api/v1/tweets/timelines/api-reference/get-statuses-home_timeline
-     */
-    var extraArgs: [String: String] = ["count":"200"]
-    if let sinceID = sinceID {
-        extraArgs["since_id"] = sinceID
-    }
-    if let maxID = maxID {
-        extraArgs["max_id"] = maxID
-    }
-    let parameters = signedParameters(method: method, url: timelineURL, credentials: credentials, encoded: extraArgs)
+    let parameters = signedParameters(
+        method: method,
+        url: timelineURL,
+        credentials: credentials,
+        parameters: RequestParameters(encodable: [
+            /**
+             Instead of fetching 20 at a time, fetch the maximum 200 at a time.
+             Especially important because `home_timeline` API limit is 15 reqeuests per 15 mins.
+             Docs: https://developer.twitter.com/en/docs/twitter-api/v1/tweets/timelines/api-reference/get-statuses-home_timeline
+             */
+            "count":"200",
+            "since_id": sinceID,
+            "max_id": maxID,
+        ])
+    )
     
     /// Formulate request.
     timelineURL.append(contentsOf: "?\(parameters.encodedSortedParameterString())")

@@ -27,12 +27,12 @@ public func hydratedTweets(
         endpoint: endpoint,
         method: .GET,
         credentials: credentials,
-        encoded: [
+        parameters: RequestParameters(encodable: [
             TweetExpansion.queryKey: expansions.csv,
             "ids": ids.joined(separator: ","),
             MediaField.queryKey: mediaFields.csv,
-            TweetField.queryKey: fields.csv,],
-        nonEncoded: [:]
+            TweetField.queryKey: fields.csv,
+        ])
     )
     
     let (data, response) = try await URLSession.shared.data(for: request, delegate: nil)
@@ -74,42 +74,21 @@ internal func authorizedRequest(
     endpoint: String,
     method: HTTPMethod,
     credentials: OAuthCredentials,
-    encoded: [String: String?],
-    nonEncoded: [String: String?]
+    parameters: RequestParameters
 ) -> URLRequest {
-    /// Be extra sure to discard `nil` values.
-    var compacted: [String: String] = [:]
-    nonEncoded.forEach{ (k,v) in
-        if let v = v {
-            compacted[k] = v
-        }
-    }
-    
-    let parameters = signedParameters(
+    let parameterDict = signedParameters(
         method: .GET,
         url: endpoint,
         credentials: credentials,
-        encoded: encoded.compacted,
-        nonEncoded: nonEncoded.compacted
+        parameters: parameters
     )
     
-    /// Manually construct query string to avoid percent-encoding CSV commas.
-    let queryString = (nonEncoded.isEmpty && encoded.isEmpty)
-        ? ""
-        : (
-            "?"
-            + nonEncoded.compacted.keySorted().parameterString()
-            + encoded.compacted.encodedSortedParameterString()
-        )
-    
-    Swift.debugPrint(queryString)
-    
-    let url = URL(string: endpoint + queryString)!
+    let url = URL(string: endpoint + parameters.queryString())!
     
     /// Set OAuth authorization header.
     var request = URLRequest(url: url)
     request.httpMethod = method.rawValue
-    request.setValue("OAuth \(parameters.headerString())", forHTTPHeaderField: "authorization")
+    request.setValue("OAuth \(parameterDict.headerString())", forHTTPHeaderField: "authorization")
     
     return request
 }

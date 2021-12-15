@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 /// Set of parameters to be attached to Twitter API Requests.
 internal struct RequestParameters {
@@ -23,17 +24,22 @@ internal struct RequestParameters {
         self.nonEncodable = nonEncodable
     }
     
+    public static let empty: Self = .init()
+    
     internal static let Discard: (String, String) -> String = { (x, _) in
         Swift.debugPrint("[WARNING], duplicate key: \(x)")
         return x
     }
     
-    public mutating func merge(_ other: Self) {
-        encodable.merge(other.encodable) { (x, _) in x }
-        nonEncodable.merge(other.nonEncodable) { (x, _) in x }
+    public func merged(_ other: Self) -> Self {
+        var result = self
+        result.encodable.merge(other.encodable) { (x, _) in x }
+        result.nonEncodable.merge(other.nonEncodable) { (x, _) in x }
+        return result
     }
     
     /// Parameters used for OAuth 1.0 Authentication.
+    /// Docs: https://developer.twitter.com/en/docs/authentication/oauth-1-0a/authorizing-a-request
     public static let OAuth: Self = .init(encodable: [
         "oauth_consumer_key": Keys.consumer,
         "oauth_nonce": nonce(),
@@ -50,5 +56,18 @@ internal struct RequestParameters {
             .keySorted()
             .parameterString()
             .addingPercentEncoding(withAllowedCharacters: .twitter)!
+    }
+    
+    public func dict() -> [String: String] {
+        encodable.compacted.merging(nonEncodable.compacted, uniquingKeysWith: Self.Discard)
+    }
+    
+    /// Used to pass URL query parameters, as in `example.com?key=value`
+    public func queryString() -> String {
+        if encodable.isEmpty && nonEncodable.isEmpty {
+            return ""
+        } else {
+            return "?" + dict().keySorted().parameterString()
+        }
     }
 }

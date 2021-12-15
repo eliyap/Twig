@@ -46,11 +46,10 @@ internal func follwingRequest(credentials: OAuthCredentials, paginationToken: St
         endpoint: "https://api.twitter.com/2/users/\(credentials.user_id)/following",
         method: .GET,
         credentials: credentials,
-        encoded: [:],
-        nonEncoded: [
+        parameters: RequestParameters(nonEncodable: [
             /// Request maximum page size of 1000.
             "max_results": "1000",
             "pagination_token": paginationToken,
-        ]
+        ])
     )
 }
