@@ -33,6 +33,7 @@ internal struct RequestParameters {
         nonEncodable.merge(other.nonEncodable) { (x, _) in x }
     }
     
+    /// Parameters used for OAuth 1.0 Authentication.
     public static let OAuth: Self = .init(encodable: [
         "oauth_consumer_key": Keys.consumer,
         "oauth_nonce": nonce(),
@@ -41,7 +42,9 @@ internal struct RequestParameters {
         "oauth_version": "1.0",
     ])
     
-    public func queryString() -> String {
+    /// Merge non-nil values into a string.
+    /// Used for composing an OAuth 1.0 signature.
+    public func encodedString() -> String {
         encodable.compacted.unsafePercentEncoded()
             .merging(nonEncodable.compacted, uniquingKeysWith: Self.Discard)
             .keySorted()
