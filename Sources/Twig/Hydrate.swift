@@ -99,7 +99,7 @@ internal func authorizedRequest(
         : (
             "?"
             + nonEncoded.compacted.keySorted().parameterString()
-            + encoded.compacted.keySorted().parameterString()
+            + encoded.compacted.encodedSortedParameterString()
         )
     
     Swift.debugPrint(queryString)
