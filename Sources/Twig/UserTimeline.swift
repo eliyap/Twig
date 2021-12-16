@@ -55,10 +55,13 @@ public func userTimeline(
     
     let decoder = JSONDecoder()
     decoder.dateDecodingStrategy = .formatted(.iso8601withFractionalSeconds)
+    
+    /// Unwrap `blob` for general consumption.
     let blob = try decoder.decode(RawUserTimelineBlob.self, from: data)
     let tweets: [RawHydratedTweet] = blob.data?.compactMap(\.item) ?? []
     let users: [RawIncludeUser] = blob.includes?.users?.compactMap(\.item) ?? []
     let media: [RawIncludeMedia] = blob.includes?.media?.compactMap(\.item) ?? []
+    
     return (tweets, users, media, blob.meta.next_token)
 }
 
@@ -76,12 +79,18 @@ internal func userTimelineRequest(
         method: .GET,
         credentials: credentials,
         parameters: RequestParameters(encodable: [
+            /// - Note: data requested should match ``hydratedTweets(credentials:ids:fields:expansions:mediaFields:)`` method.
             TweetExpansion.queryKey: RawHydratedTweet.expansions.csv,
             MediaField.queryKey: RawHydratedTweet.mediaFields.csv,
             TweetField.queryKey: RawHydratedTweet.fields.csv,
+            
+            /// Defines a time window in which tweets must fall to be included.
             "start_time": startTime?.formatted(with: .iso8601withWholeSeconds),
             "end_time": endTime?.formatted(with: .iso8601withWholeSeconds),
+            
+            /// Token to pass to receive the next page (if any).
             "pagination_token": nextToken,
+            
             /// Request the maximum 100 tweets per page, instead of the default 10.
             /// See docs: https://developer.twitter.com/en/docs/twitter-api/tweets/timelines/api-reference/get-users-id-tweets
             "max_results": "100",
