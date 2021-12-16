@@ -24,42 +24,6 @@ internal struct RawUserTimelineBlob: Decodable {
     let includes: RawIncludes?
 }
 
-public func userTimelinePublisher(
-    userID: String,
-    credentials: OAuthCredentials,
-    startTime: Date?,
-    endTime: Date?,
-    nextToken: String?
-) -> AnyPublisher<([RawHydratedTweet], [RawIncludeUser], [RawIncludeMedia]), Error> {
-    let request = userTimelineRequest(userID: userID, credentials: credentials, startTime: startTime, endTime: endTime, nextToken: nextToken)
-    return URLSession.shared.dataTaskPublisher(for: request)
-        .map { (data: Data, response: URLResponse) -> Data in
-            /// Check and discard response.
-            if let response = response as? HTTPURLResponse {
-                if 200..<300 ~= response.statusCode { /* ok! */}
-                else {
-                    Swift.debugPrint("Following request returned with status code \(response.statusCode)")
-                }
-            }
-
-            /// Print raw data if requested.
-            if DEBUG_DUMP_JSON {
-                let dict: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
-                print(dict as Any)
-            }
-
-            return data
-        }
-        .tryMap{ (data: Data) in
-            let blob = try JSONDecoder().decode(RawUserTimelineBlob.self, from: data)
-            let tweets: [RawHydratedTweet] = blob.data?.compactMap(\.item) ?? []
-            let users: [RawIncludeUser] = blob.includes?.users?.compactMap(\.item) ?? []
-            let media: [RawIncludeMedia] = blob.includes?.media?.compactMap(\.item) ?? []
-            return (tweets, users, media)
-        }
-        .eraseToAnyPublisher()
-}
-
 public func userTimeline(
     userID: String,
     credentials: OAuthCredentials,
