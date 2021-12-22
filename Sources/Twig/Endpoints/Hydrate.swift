@@ -9,6 +9,16 @@ import Foundation
 
 fileprivate let DEBUG_DUMP_JSON = false
 
+/** Shell enum describing the v2 "Tweets" endpoint.
+ */
+public enum TweetEndpoint {
+    internal static let url = "https://api.twitter.com/2/tweets"
+    
+    /// We may request a maximum of 100 tweets per page.
+    /// Docs: https://developer.twitter.com/en/docs/twitter-api/tweets/timelines/api-reference/get-users-id-tweets
+    public static let maxResults = 100
+}
+
 public func hydratedTweets(
     credentials: OAuthCredentials,
     ids: [String],
@@ -18,9 +28,9 @@ public func hydratedTweets(
 ) async throws -> ([RawHydratedTweet], [RawIncludeUser], [RawIncludeMedia]) {
     let endpoint = "https://api.twitter.com/2/tweets"
     var ids = ids
-    if ids.count > 100 {
-        Swift.debugPrint("⚠️ WARNING: DISCARDING IDS OVER 100!")
-        ids = Array(ids[..<100])
+    if ids.count > TweetEndpoint.maxResults {
+        Swift.debugPrint("⚠️ WARNING: DISCARDING IDS OVER \(TweetEndpoint.maxResults)!")
+        ids = Array(ids[..<TweetEndpoint.maxResults])
     }
     
     let request = authorizedRequest(

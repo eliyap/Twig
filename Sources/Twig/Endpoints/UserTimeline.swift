@@ -91,9 +91,9 @@ internal func userTimelineRequest(
             /// Token to pass to receive the next page (if any).
             "pagination_token": nextToken,
             
-            /// Request the maximum 100 tweets per page, instead of the default 10.
+            /// Request the maximum tweets per page, instead of the default 10.
             /// See docs: https://developer.twitter.com/en/docs/twitter-api/tweets/timelines/api-reference/get-users-id-tweets
-            "max_results": "100",
+            "max_results": "\(TweetEndpoint.maxResults)",
         ])
     )
 }

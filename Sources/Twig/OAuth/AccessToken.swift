@@ -7,6 +7,12 @@
 
 import Foundation
 
+/// Fetch the OAuth access token from Twitter, using the callbar URL provided after the user logs in on their phone.
+///
+/// Completes "Step 3: POST `oauth/access_token`" as outlined below:
+/// https://developer.twitter.com/en/docs/authentication/oauth-1-0a/obtaining-user-access-tokens
+///
+/// Endpoint documentation: https://developer.twitter.com/en/docs/authentication/api-reference/access_token
 public func accessToken(callbackURL: String) async throws -> OAuthCredentials {
     let response = try AuthorizeResponse(callbackURL: callbackURL)
     let parameters: [String: String] = [
@@ -29,6 +35,16 @@ public func accessToken(callbackURL: String) async throws -> OAuthCredentials {
     }
 }
 
+/// Parses an example response from endpoint:
+/// https://developer.twitter.com/en/docs/authentication/api-reference/access_token
+///
+/// Example response: (whitespace added for readability)
+/// ```
+///  oauth_token=62532xx-eWudHldSbIaelX7swmsiHImEL4KinwaGloxxxxxx
+/// &oauth_token_secret=2EEfA6BG5ly3sR3XjE0IBSnlQu4ZrUzPiYxxxxxx
+/// &user_id=6253282
+/// &screen_name=twitterapi
+/// ```
 fileprivate func parseCredentials(from data: Data) -> OAuthCredentials? {
     guard let string = String(bytes: data, encoding: .ascii) else { return nil }
     let pairs = string.split(separator: "&")
@@ -90,4 +106,3 @@ fileprivate struct AuthorizeResponse {
         self.oauth_verifier = oauth_verifier
     }
 }
-
