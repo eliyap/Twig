@@ -7,9 +7,12 @@
 
 import Foundation
 
+/// Describes an object with with a UserID (typically some kind of Twitter User representation).
 public protocol UserIdentifiable {
     var id: String { get }
 }
+
+extension RawIncludeUser: UserIdentifiable { }
 
 /// Describes an object with an identifiable author (typically some kind of Tweet representation).
 public protocol AuthorIdentifiable {
