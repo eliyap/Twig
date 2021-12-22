@@ -12,6 +12,17 @@ internal struct RawFollowingResponse: Decodable {
     }
 }
 
+/// Shell enum for information about the "Following" endpoint.
+public enum FollowingEndpoint {
+    /** Fetches are limited to ~1/min. Therefore, only declare data stale after 90s.
+        Docs: https://developer.twitter.com/en/docs/twitter-api/users/follows/api-reference/get-users-id-following
+     
+        Computed to work around generic-stored error.
+     */
+    public static var staleTimer: TimeInterval { 90 }
+    
+}
+
 /// Get all users this user follows.
 public func requestFollowing(credentials: OAuthCredentials) async throws -> Set<RawIncludeUser> {
     let decoder = JSONDecoder()
