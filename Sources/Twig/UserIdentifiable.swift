@@ -28,3 +28,9 @@ public protocol ReplyIdentifiable {
 }
 
 extension RawHydratedTweet: ReplyIdentifiable { }
+
+public protocol TweetIdentifiable {
+    var id: String { get }
+}
+
+extension RawHydratedTweet: TweetIdentifiable { }
