@@ -87,9 +87,9 @@ public func hydratedTweets(
 public func _hydratedTweets(
     credentials: OAuthCredentials,
     ids: [String],
-    fields: Set<TweetField> = [],
-    expansions: Set<TweetExpansion> = [],
-    mediaFields: Set<MediaField> = []
+    fields: Set<TweetField> = RawHydratedTweet.fields,
+    expansions: Set<TweetExpansion> = RawHydratedTweet.expansions,
+    mediaFields: Set<MediaField> = RawHydratedTweet.mediaFields
 ) async throws -> ([RawHydratedTweet], [RawHydratedTweet], [RawIncludeUser], [RawIncludeMedia]) {
     let endpoint = "https://api.twitter.com/2/tweets"
     var ids = ids
