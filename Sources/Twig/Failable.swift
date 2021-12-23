@@ -20,7 +20,7 @@ struct Failable<T: Decodable>: Decodable {
         #if DEBUG
         if item == nil {
             /// Intentionally crash to reveal error.
-            _ = try! container.decode(T.self)
+            _ = try container.decode(T.self)
         }
         #endif
     }
