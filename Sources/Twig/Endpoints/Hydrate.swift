@@ -17,7 +17,7 @@ public enum TweetEndpoint {
     public static let maxResults = 100
 }
 
-public func _hydratedTweets(
+public func hydratedTweets(
     credentials: OAuthCredentials,
     ids: [String],
     fields: Set<TweetField> = RawHydratedTweet.fields,
