@@ -17,73 +17,6 @@ public enum TweetEndpoint {
     public static let maxResults = 100
 }
 
-public func hydratedTweets(
-    credentials: OAuthCredentials,
-    ids: [String],
-    fields: Set<TweetField> = [],
-    expansions: Set<TweetExpansion> = [],
-    mediaFields: Set<MediaField> = []
-) async throws -> ([RawHydratedTweet], [RawIncludeUser], [RawIncludeMedia]) {
-    let endpoint = "https://api.twitter.com/2/tweets"
-    var ids = ids
-    if ids.count > TweetEndpoint.maxResults {
-        Swift.debugPrint("⚠️ WARNING: DISCARDING IDS OVER \(TweetEndpoint.maxResults)!")
-        ids = Array(ids[..<TweetEndpoint.maxResults])
-    }
-    
-    let request = authorizedRequest(
-        endpoint: endpoint,
-        method: .GET,
-        credentials: credentials,
-        parameters: RequestParameters(encodable: [
-            TweetExpansion.queryKey: expansions.csv,
-            "ids": ids.joined(separator: ","),
-            MediaField.queryKey: mediaFields.csv,
-            TweetField.queryKey: fields.csv,
-        ])
-    )
-    
-    let (data, response) = try await URLSession.shared.data(for: request, delegate: nil)
-
-    if let response = response as? HTTPURLResponse {
-        if 200..<300 ~= response.statusCode { /* ok! */}
-        else {
-            Swift.debugPrint("Tweet request returned with status code \(response.statusCode)")
-            let dict: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
-            Swift.debugPrint(dict as Any)
-        }
-    }
-    
-    /// Decode and nil-coalesce.
-    let decoder = JSONDecoder()
-    decoder.dateDecodingStrategy = .formatted(.iso8601withFractionalSeconds)
-    let blob: RawHydratedBlob
-    do {
-        blob = try decoder.decode(RawHydratedBlob.self, from: data)
-    } catch {
-        #if DEBUG
-        let dict: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
-        print(dict as Any)
-        #endif
-        throw TwigError.malformedJSON
-    }
-    
-    var tweets: [RawHydratedTweet]
-    if let data = blob.data {
-        tweets = data.compactMap(\.item)
-        Swift.debugPrint("All media keys", tweets.compactMap(\.attachments?.media_keys))
-    } else {
-        Swift.debugPrint("No data returned for hydrated tweets.")
-        tweets = []
-    }
-    tweets += blob.includes?.tweets?.compactMap(\.item) ?? []
-    let users: [RawIncludeUser] = blob.includes?.users?.compactMap(\.item) ?? []
-    let media: [RawIncludeMedia] = blob.includes?.media?.compactMap(\.item) ?? []
-    
-    return (tweets, users, media)
-}
-
-#warning("De-Dupe methods!")
 public func _hydratedTweets(
     credentials: OAuthCredentials,
     ids: [String],
@@ -138,7 +71,7 @@ public func _hydratedTweets(
     var tweets: [RawHydratedTweet]
     if let data = blob.data {
         tweets = data.compactMap(\.item)
-        Swift.debugPrint("All media keys", tweets.compactMap(\.attachments?.media_keys))
+        Swift.debugPrint("All media keys", tweets.compactMap(\.attachments?.media_keys).flatMap { $0 }.sorted())
     } else {
         Swift.debugPrint("No data returned for hydrated tweets.")
         tweets = []
