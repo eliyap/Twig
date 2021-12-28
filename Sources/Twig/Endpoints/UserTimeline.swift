@@ -49,7 +49,7 @@ public func userTimeline(
     if let response = response as? HTTPURLResponse {
         if 200..<300 ~= response.statusCode { /* ok! */}
         else {
-            Swift.debugPrint("Following request returned with status code \(response.statusCode)")
+            Swift.debugPrint("User Timeline request returned with status code \(response.statusCode)")
         }
     }
     
