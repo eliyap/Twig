@@ -27,7 +27,8 @@ public struct RawIncludeUser: Decodable, Hashable {
     
     public let entities: RawEntities?
     
-    public let pinned_tweet_id: String
+    /// Undocumented optional.
+    public let pinned_tweet_id: String?
     
     public let profile_image_url: String
     
