@@ -9,7 +9,7 @@ import Foundation
 
 /// The additional information we may obtain for a User Object.
 /// Docs: https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/user
-public enum UserField: String {
+public enum UserField: String, CSVable {
     static let queryKey = "user.fields"
     
     case created_at
