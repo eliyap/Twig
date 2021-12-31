@@ -30,7 +30,7 @@ public func userTimeline(
     startTime: Date?,
     endTime: Date?,
     nextToken: String?
-) async throws -> ([RawHydratedTweet], [RawIncludeUser], [RawIncludeMedia], String?) {
+) async throws -> ([RawHydratedTweet], [RawUser], [RawIncludeMedia], String?) {
     let request = userTimelineRequest(
         userID: userID,
         credentials: credentials,
@@ -47,9 +47,9 @@ public func userTimeline(
     
     /// Check and discard response.
     if let response = response as? HTTPURLResponse {
-        if 200..<300 ~= response.statusCode { /* ok! */}
+        if 200..<300 ~= response.statusCode { /* ok! */ }
         else {
-            Swift.debugPrint("Following request returned with status code \(response.statusCode)")
+            Swift.debugPrint("User Timeline request returned with status code \(response.statusCode)")
         }
     }
     
@@ -59,7 +59,7 @@ public func userTimeline(
     /// Unwrap `blob` for general consumption.
     let blob = try decoder.decode(RawUserTimelineBlob.self, from: data)
     let tweets: [RawHydratedTweet] = blob.data?.compactMap(\.item) ?? []
-    let users: [RawIncludeUser] = blob.includes?.users?.compactMap(\.item) ?? []
+    let users: [RawUser] = blob.includes?.users?.compactMap(\.item) ?? []
     let media: [RawIncludeMedia] = blob.includes?.media?.compactMap(\.item) ?? []
     
     return (tweets, users, media, blob.meta.next_token)
@@ -83,6 +83,7 @@ internal func userTimelineRequest(
             TweetExpansion.queryKey: RawHydratedTweet.expansions.csv,
             MediaField.queryKey: RawHydratedTweet.mediaFields.csv,
             TweetField.queryKey: RawHydratedTweet.fields.csv,
+            UserField.queryKey: UserField.common.csv,
             
             /// Defines a time window in which tweets must fall to be included.
             "start_time": startTime?.formatted(with: .iso8601withWholeSeconds),

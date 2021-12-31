@@ -2,7 +2,7 @@ import Foundation
 import Combine
 
 internal struct RawFollowingResponse: Decodable {
-    let data: [RawIncludeUser]
+    let data: [RawUser]
     let meta: Meta
     
     /// With apologies to Mark Zuckerberg.
@@ -24,9 +24,9 @@ public enum FollowingEndpoint {
 }
 
 /// Get all users this user follows.
-public func requestFollowing(credentials: OAuthCredentials) async throws -> Set<RawIncludeUser> {
+public func requestFollowing(credentials: OAuthCredentials) async throws -> Set<RawUser> {
     let decoder = JSONDecoder()
-    var users = Set<RawIncludeUser>()
+    var users = Set<RawUser>()
 
     /// Fetch until API returns no token, indicating last page.
     var paginationToken: String? = nil
@@ -61,6 +61,7 @@ internal func follwingRequest(credentials: OAuthCredentials, paginationToken: St
             /// Request maximum page size of 1000.
             "max_results": "1000",
             "pagination_token": paginationToken,
+            UserField.queryKey: UserField.common.csv,
         ])
     )
 }

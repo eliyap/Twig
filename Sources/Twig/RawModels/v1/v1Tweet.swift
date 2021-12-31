@@ -25,7 +25,7 @@ public struct RawV1Tweet: Codable {
     public let in_reply_to_user_id_str: String?
     public let in_reply_to_screen_name: String?
     
-    public let user: RawUser
+    public let user: RawV1User
     
     /// Location
     public let coordinates: RawCoordinates?
@@ -80,5 +80,5 @@ public struct SkeletonTweet: Codable {
     public let source: String
     public let truncated: Bool
 
-    public let user: RawUser
+    public let user: RawV1User
 }

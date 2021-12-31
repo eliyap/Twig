@@ -12,7 +12,7 @@ public protocol UserIdentifiable {
     var id: String { get }
 }
 
-extension RawIncludeUser: UserIdentifiable { }
+extension RawUser: UserIdentifiable { }
 
 /// Describes an object with an identifiable author (typically some kind of Tweet representation).
 public protocol AuthorIdentifiable {
@@ -28,3 +28,9 @@ public protocol ReplyIdentifiable {
 }
 
 extension RawHydratedTweet: ReplyIdentifiable { }
+
+public protocol TweetIdentifiable {
+    var id: String { get }
+}
+
+extension RawHydratedTweet: TweetIdentifiable { }
