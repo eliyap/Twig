@@ -8,7 +8,7 @@
 import Foundation
 
 /// Docs: https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/user
-public struct RawIncludeUser: Decodable, Hashable {
+public struct RawUser: Decodable, Hashable {
     public let id: String
     
     /// Displayed name.
@@ -30,8 +30,10 @@ public struct RawIncludeUser: Decodable, Hashable {
     /// Undocumented optional.
     public let pinned_tweet_id: String?
     
-    public let profile_image_url: String
+    /// Assumed to be optional, but I never checked this.
+    public let profile_image_url: String?
     
+    /// Whether `User`'s tweets are protected (aka private).
     public let protected: Bool
     
     public let url: String

@@ -23,7 +23,7 @@ public func hydratedTweets(
     fields: Set<TweetField> = RawHydratedTweet.fields,
     expansions: Set<TweetExpansion> = RawHydratedTweet.expansions,
     mediaFields: Set<MediaField> = RawHydratedTweet.mediaFields
-) async throws -> ([RawHydratedTweet], [RawHydratedTweet], [RawIncludeUser], [RawIncludeMedia]) {
+) async throws -> ([RawHydratedTweet], [RawHydratedTweet], [RawUser], [RawIncludeMedia]) {
     let endpoint = "https://api.twitter.com/2/tweets"
     var ids = ids
     if ids.count > TweetEndpoint.maxResults {
@@ -78,7 +78,7 @@ public func hydratedTweets(
         tweets = []
     }
     let includedTweets = blob.includes?.tweets?.compactMap(\.item) ?? []
-    let users: [RawIncludeUser] = blob.includes?.users?.compactMap(\.item) ?? []
+    let users: [RawUser] = blob.includes?.users?.compactMap(\.item) ?? []
     let media: [RawIncludeMedia] = blob.includes?.media?.compactMap(\.item) ?? []
     
     return (tweets, includedTweets, users, media)

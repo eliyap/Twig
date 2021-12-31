@@ -9,7 +9,7 @@ import Foundation
 
 internal struct RawIncludes: Decodable {
     public let tweets: [Failable<RawHydratedTweet>]?
-    public let users: [Failable<RawIncludeUser>]?
+    public let users: [Failable<RawUser>]?
     public let media: [Failable<RawIncludeMedia>]?
 }
 

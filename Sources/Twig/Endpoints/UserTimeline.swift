@@ -30,7 +30,7 @@ public func userTimeline(
     startTime: Date?,
     endTime: Date?,
     nextToken: String?
-) async throws -> ([RawHydratedTweet], [RawIncludeUser], [RawIncludeMedia], String?) {
+) async throws -> ([RawHydratedTweet], [RawUser], [RawIncludeMedia], String?) {
     let request = userTimelineRequest(
         userID: userID,
         credentials: credentials,
@@ -59,7 +59,7 @@ public func userTimeline(
     /// Unwrap `blob` for general consumption.
     let blob = try decoder.decode(RawUserTimelineBlob.self, from: data)
     let tweets: [RawHydratedTweet] = blob.data?.compactMap(\.item) ?? []
-    let users: [RawIncludeUser] = blob.includes?.users?.compactMap(\.item) ?? []
+    let users: [RawUser] = blob.includes?.users?.compactMap(\.item) ?? []
     let media: [RawIncludeMedia] = blob.includes?.media?.compactMap(\.item) ?? []
     
     return (tweets, users, media, blob.meta.next_token)
