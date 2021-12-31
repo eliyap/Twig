@@ -8,7 +8,7 @@
 import Foundation
 
 /// Docs: https://developer.twitter.com/en/docs/twitter-api/data-dictionary/object-model/user
-public struct RawIncludeUser: Decodable, Sendable, Hashable {
+public struct RawIncludeUser: Decodable, Hashable {
     public let id: String
     
     /// Displayed name.
@@ -18,4 +18,22 @@ public struct RawIncludeUser: Decodable, Sendable, Hashable {
     /// API v2's alias for v1's `screen_name`.
     /// Twitter Handle. e.g. @twostraws
     public let username: String
+    
+    /// The UTC datetime that the user account was created on Twitter.
+    public let created_at: Date
+    
+    /// User's text profile description (aka bio), if any.
+    public let description: String
+    
+    public let entities: RawEntities?
+    
+    public let pinned_tweet_id: String
+    
+    public let profile_image_url: String
+    
+    public let protected: Bool
+    
+    public let url: String
+    
+    public let verified: Bool
 }

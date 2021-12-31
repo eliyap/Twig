@@ -2,7 +2,7 @@ import Foundation
 
 // MARK: - v2 Entities
 
-public struct RawEntities: Codable {
+public struct RawEntities: Codable, Hashable {
     public var annotations: [RawAnnotation]?
     public var mentions: [RawMention]?
     public var hashtags: [RawTag]?
