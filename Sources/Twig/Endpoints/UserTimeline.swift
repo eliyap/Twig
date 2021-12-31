@@ -83,6 +83,7 @@ internal func userTimelineRequest(
             TweetExpansion.queryKey: RawHydratedTweet.expansions.csv,
             MediaField.queryKey: RawHydratedTweet.mediaFields.csv,
             TweetField.queryKey: RawHydratedTweet.fields.csv,
+            UserField.queryKey: UserField.common.csv,
             
             /// Defines a time window in which tweets must fall to be included.
             "start_time": startTime?.formatted(with: .iso8601withWholeSeconds),

@@ -40,6 +40,7 @@ public func hydratedTweets(
             "ids": ids.joined(separator: ","),
             MediaField.queryKey: mediaFields.csv,
             TweetField.queryKey: fields.csv,
+            UserField.queryKey: UserField.common.csv,
         ])
     )
     

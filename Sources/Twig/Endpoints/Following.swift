@@ -61,6 +61,7 @@ internal func follwingRequest(credentials: OAuthCredentials, paginationToken: St
             /// Request maximum page size of 1000.
             "max_results": "1000",
             "pagination_token": paginationToken,
+            UserField.queryKey: UserField.common.csv,
         ])
     )
 }
