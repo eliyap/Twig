@@ -26,6 +26,7 @@ public enum FollowingEndpoint {
 /// Get all users this user follows.
 public func requestFollowing(credentials: OAuthCredentials) async throws -> Set<RawUser> {
     let decoder = JSONDecoder()
+    decoder.dateDecodingStrategy = .formatted(.iso8601withFractionalSeconds)
     var users = Set<RawUser>()
 
     /// Fetch until API returns no token, indicating last page.
