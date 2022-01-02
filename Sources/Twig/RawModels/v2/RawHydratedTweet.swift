@@ -88,3 +88,9 @@ public extension RawHydratedTweet {
         referenced_tweets?.first(where: {$0.type == .replied_to})?.id
     }
 }
+
+public extension RawHydratedTweet {
+    var retweetID: String? {
+        referenced_tweets?.first(where: {$0.type == .retweeted})?.id
+    }
+}

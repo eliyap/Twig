@@ -26,6 +26,7 @@ public enum FollowingEndpoint {
 /// Get all users this user follows.
 public func requestFollowing(credentials: OAuthCredentials) async throws -> Set<RawUser> {
     let decoder = JSONDecoder()
+    decoder.dateDecodingStrategy = .formatted(.iso8601withFractionalSeconds)
     var users = Set<RawUser>()
 
     /// Fetch until API returns no token, indicating last page.
@@ -57,11 +58,15 @@ internal func follwingRequest(credentials: OAuthCredentials, paginationToken: St
         endpoint: "https://api.twitter.com/2/users/\(credentials.user_id)/following",
         method: .GET,
         credentials: credentials,
-        parameters: RequestParameters(nonEncodable: [
-            /// Request maximum page size of 1000.
-            "max_results": "1000",
-            "pagination_token": paginationToken,
-            UserField.queryKey: UserField.common.csv,
-        ])
+        parameters: RequestParameters(
+            encodable: [
+                UserField.queryKey: UserField.common.csv,
+            ],
+            nonEncodable: [
+                /// Request maximum page size of 1000.
+                "max_results": "1000",
+                "pagination_token": paginationToken,
+            ]
+        )
     )
 }
