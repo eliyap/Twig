@@ -18,11 +18,16 @@ public enum UserEndpoint {
     public static let maxResults = 100
 }
 
+internal struct RawUsersBlob: Decodable {
+    public let data: [Failable<RawUser>]?
+    public let includes: RawIncludes?
+}
+
 
 public func users(
     userIDs: [String],
     credentials: OAuthCredentials
-) async throws {
+) async throws -> [RawUser] {
     precondition(1...100 ~= userIDs.count, "Invalid number of user ids: \(userIDs.count)")
     
     let request = userRequest(userIDs: userIDs, credentials: credentials)
@@ -39,9 +44,9 @@ public func users(
     /// Decode and nil-coalesce.
     let decoder = JSONDecoder()
     decoder.dateDecodingStrategy = .formatted(.iso8601withFractionalSeconds)
-    let blob: RawHydratedBlob
+    let blob: RawUsersBlob
     do {
-        blob = try decoder.decode(RawHydratedBlob.self, from: data)
+        blob = try decoder.decode(RawUsersBlob.self, from: data)
     } catch {
         #if DEBUG
         let dict: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
@@ -49,6 +54,10 @@ public func users(
         #endif
         throw TwigError.malformedJSON
     }
+    
+    let users: [RawUser] = blob.data?.compactMap(\.item) ?? []
+    
+    return users
 }
 
 internal func userRequest(
@@ -59,11 +68,19 @@ internal func userRequest(
         endpoint: UserEndpoint.url,
         method: .GET,
         credentials: credentials,
-        parameters: RequestParameters(encodable: [
-//            TweetExpansion.queryKey: RawHydratedTweet.expansions.csv,
-            "ids": userIDs.joined(separator: ","),
-//            TweetField.queryKey: RawHydratedTweet.fields.csv,
-//            UserField.queryKey: UserField.common.csv,
-        ])
+        parameters: RequestParameters(
+            encodable: [
+                "ids": userIDs.joined(separator: ","),
+                UserField.queryKey: UserField.common.csv,
+                TweetField.queryKey: RawHydratedTweet.fields.csv,
+                
+                /// At this time, the only expansion available to endpoints that primarily return user objects
+                /// is `expansions=pinned_tweet_id`.
+                "expansions": "pinned_tweet_id",
+            ],
+            nonEncodable: [
+                :
+            ]
+        )
     )
 }
