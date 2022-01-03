@@ -23,7 +23,6 @@ internal struct RawUsersBlob: Decodable {
     public let includes: RawIncludes?
 }
 
-
 public func users(
     userIDs: [String],
     credentials: OAuthCredentials
