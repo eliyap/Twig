@@ -26,11 +26,13 @@ internal struct RequestParameters {
     
     public static let empty: Self = .init()
     
+    /// Closure that "de-dupes" keys, though de-duping should never be necessary.
     internal static let Discard: (String, String) -> String = { (x, _) in
         Swift.debugPrint("[WARNING], duplicate key: \(x)")
         return x
     }
     
+    /// Memberwise dictionary merge.
     public func merged(_ other: Self) -> Self {
         var result = self
         result.encodable.merge(other.encodable) { (x, _) in x }
