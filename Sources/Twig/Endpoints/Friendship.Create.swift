@@ -31,9 +31,11 @@ public func follow(_ target: String, credentials: OAuthCredentials) async throws
     if let response = response as? HTTPURLResponse {
         if 200..<300 ~= response.statusCode { /* ok! */ }
         else {
-            Swift.debugPrint("Users request returned with status code \(response.statusCode)")
+            #if DEBUG
+            Swift.debugPrint("Follow request returned with status code \(response.statusCode)")
             let dict: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
             Swift.debugPrint(dict as Any)
+            #endif
         }
     }
     
