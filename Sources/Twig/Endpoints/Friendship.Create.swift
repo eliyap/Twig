@@ -24,7 +24,12 @@ public struct FollowingRequestResult: Codable {
 }
 
 public func follow(_ target: String, credentials: OAuthCredentials) async throws -> FollowingRequestResult {
-    let request = friendshipCreateRequest(targetID: target, credentials: credentials)
+    let request = authorizedRequest(
+        endpoint: "https://api.twitter.com/2/users/\(credentials.user_id)/following",
+        method: .POST,
+        credentials: credentials,
+        parameters: RequestParameters.empty
+    )
     let body = try JSONEncoder().encode(["target_user_id": target])
     
     let (data, response): (Data, URLResponse) = try await URLSession.shared.upload(for: request, from: body, delegate: nil)
@@ -41,21 +46,4 @@ public func follow(_ target: String, credentials: OAuthCredentials) async throws
     
     let blob = try JSONDecoder().decode(FollowingRequestResponse.self, from: data)
     return blob.data
-}
-
-/// - Parameters:
-///   - userID: Our user's Twitter User ID
-///   - targetID: Twitter User ID of the user to follow
-///   - credentials: OAuth 1.0 credentials
-/// - Returns: URL Request for `userID` to follow `targetID`
-fileprivate func friendshipCreateRequest(
-    targetID: String,
-    credentials: OAuthCredentials
-) -> URLRequest {
-    authorizedRequest(
-        endpoint: "https://api.twitter.com/2/users/\(credentials.user_id)/following",
-        method: .POST,
-        credentials: credentials,
-        parameters: RequestParameters.empty
-    )
 }
