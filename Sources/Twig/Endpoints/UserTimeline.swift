@@ -11,9 +11,9 @@ import Foundation
 fileprivate let DEBUG_DUMP_JSON = false
 
 internal struct RawUserTimelineMetadata: Decodable {
-    let newest_id: String
+    let newest_id: String?
     let next_token: String?
-    let oldest_id: String
+    let oldest_id: String?
     let result_count: Int
 }
 
