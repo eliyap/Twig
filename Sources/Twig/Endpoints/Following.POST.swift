@@ -31,14 +31,20 @@ public func follow(_ target: String, credentials: OAuthCredentials) async throws
         parameters: RequestParameters.empty
     )
     
+    Swift.debugPrint("user id \(credentials.user_id)")
+    Swift.debugPrint("target \(target)")
+    
     /// To ensure that our request is always sent, ignore local cache data.
     /// Source: https://www.swiftbysundell.com/articles/http-post-and-file-upload-requests-using-urlsession/
     request.cachePolicy = .reloadIgnoringLocalCacheData
     request.setValue("application/json", forHTTPHeaderField: "content-type")
     
-    let body = try JSONEncoder().encode(["target_user_id": target])
+//    let body = try JSONEncoder().encode(["target_user_id": target])
+    request.httpBody = Data(#"""
+        {"target_user_id":"\#(target)"}
+        """#.utf8)
     
-    let (data, response): (Data, URLResponse) = try await URLSession.shared.upload(for: request, from: body, delegate: nil)
+    let (data, response): (Data, URLResponse) = try await URLSession.shared.upload(for: request, from: Data.init(), delegate: nil)
     if let response = response as? HTTPURLResponse {
         if 200..<300 ~= response.statusCode { /* ok! */ }
         else {
