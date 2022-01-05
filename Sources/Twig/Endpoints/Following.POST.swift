@@ -36,11 +36,9 @@ public func follow(userID: String, credentials: OAuthCredentials) async throws -
     request.cachePolicy = .reloadIgnoringLocalCacheData
     request.setValue("application/json", forHTTPHeaderField: "content-type")
     
-    request.httpBody = Data(#"""
-        {"target_user_id":"\#(userID)"}
-        """#.utf8)
+    let body = try JSONEncoder().encode(["target_user_id": userID])
     
-    let (data, response): (Data, URLResponse) = try await URLSession.shared.upload(for: request, from: Data.init(), delegate: nil)
+    let (data, response): (Data, URLResponse) = try await URLSession.shared.upload(for: request, from: body, delegate: nil)
     if let response = response as? HTTPURLResponse {
         if 200..<300 ~= response.statusCode { /* ok! */ }
         else {
