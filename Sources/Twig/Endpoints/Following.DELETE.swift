@@ -21,12 +21,7 @@ public func unfollow(userID: String, credentials: OAuthCredentials) async throws
         endpoint: "https://api.twitter.com/2/users/\(credentials.user_id)/following/\(userID)",
         method: .DELETE,
         credentials: credentials,
-        parameters: RequestParameters(encodable: [
-            "consumer_key": Keys.consumer,
-            "consumer_secret": Keys.consumer_secret,
-            "oauth_token": credentials.oauth_token,
-            "oauth_token_secret": credentials.oauth_token_secret,
-        ])
+        parameters: RequestParameters.empty
     )
     
     let (data, response): (Data, URLResponse) = try await URLSession.shared.upload(for: request, from: Data.init(), delegate: nil)
@@ -34,7 +29,7 @@ public func unfollow(userID: String, credentials: OAuthCredentials) async throws
         if 200..<300 ~= response.statusCode { /* ok! */ }
         else {
             #if DEBUG
-            Swift.debugPrint("Follow request returned with status code \(response.statusCode)")
+            Swift.debugPrint("Unfollow request returned with status code \(response.statusCode)")
             let dict: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
             Swift.debugPrint(dict as Any)
             #endif
