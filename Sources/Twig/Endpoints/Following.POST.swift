@@ -7,13 +7,6 @@
 
 import Foundation
 
-/** Shell enum describing the v2 "Friendships/Create" endpoint.
-    Docs: https://developer.twitter.com/en/docs/twitter-api/users/follows/api-reference/post-users-source_user_id-following
- */
-public enum FriendshipCreateEndpoint {
-    
-}
-
 fileprivate struct FollowingRequestResponse: Codable {
     let data: FollowingRequestResult
 }
@@ -24,7 +17,7 @@ public struct FollowingRequestResult: Codable {
 }
 
 @available(*, deprecated, message: "Do not use, consistently returns 403 for unknown reason.")
-public func follow(_ target: String, credentials: OAuthCredentials) async throws -> FollowingRequestResult {
+public func _follow(_ target: String, credentials: OAuthCredentials) async throws -> FollowingRequestResult {
     var request = authorizedRequest(
         endpoint: "https://api.twitter.com/2/users/\(credentials.user_id)/following",
         method: .POST,

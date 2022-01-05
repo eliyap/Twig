@@ -8,7 +8,7 @@
 import Foundation
 
 @available(*, deprecated, message: "Do not use, consistently returns 403 for unknown reason.")
-public func unfollow(_ target: String, credentials: OAuthCredentials) async throws -> Void {
+public func _unfollow(_ target: String, credentials: OAuthCredentials) async throws -> Void {
     let request = authorizedRequest(
         endpoint: "https://api.twitter.com/2/users/\(credentials.user_id)/following/\(target)",
         method: .DELETE,
