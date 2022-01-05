@@ -27,6 +27,7 @@ public enum TwigError: Error {
 public enum HTTPMethod: String {
     case GET
     case POST
+    case DELETE
 }
 
 extension URLRequest {
