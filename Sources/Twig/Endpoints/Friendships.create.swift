@@ -7,16 +7,25 @@
 
 import Foundation
 
-public func unfollow(_ target: String, credentials: OAuthCredentials) async throws -> Void {
+/** Shell enum describing the v1.1 "Friendships/Create" endpoint.
+    Docs: https://developer.twitter.com/en/docs/twitter-api/v1/accounts-and-users/follow-search-get-users/api-reference/post-friendships-create
+ */
+public enum FriendshipCreateEndpoint {
+    internal static let url = "https://api.twitter.com/1.1/friendships/create.json"
+}
+
+@available(*, deprecated, message: "Please use v2 follow endpoint instead.")
+public func _follow(
+    userID: String,
+    credentials: OAuthCredentials
+) async throws-> Void {
     let request = authorizedRequest(
-        endpoint: "https://api.twitter.com/2/users/\(credentials.user_id)/following/\(target)",
-        method: .DELETE,
+        endpoint: FriendshipCreateEndpoint.url,
+        method: .POST,
         credentials: credentials,
         parameters: RequestParameters(encodable: [
-            "consumer_key": Keys.consumer,
-            "consumer_secret": Keys.consumer_secret,
-            "oauth_token": credentials.oauth_token,
-            "oauth_token_secret": credentials.oauth_token_secret,
+            "user_id": userID,
+            "follow": "true",
         ])
     )
     
@@ -33,5 +42,5 @@ public func unfollow(_ target: String, credentials: OAuthCredentials) async thro
         }
     }
     
-    /// Never reached.
+    print("OK!")
 }

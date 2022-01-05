@@ -7,6 +7,13 @@
 
 import Foundation
 
+/** Shell enum describing the v2 "Follow" endpoint.
+    Docs: https://developer.twitter.com/en/docs/twitter-api/users/follows/api-reference/post-users-source_user_id-following
+ */
+public enum FollowUserEndpoint {
+    
+}
+
 fileprivate struct FollowingRequestResponse: Codable {
     let data: FollowingRequestResult
 }
@@ -16,8 +23,7 @@ public struct FollowingRequestResult: Codable {
     public let pending_follow: Bool
 }
 
-@available(*, deprecated, message: "Do not use, consistently returns 403 for unknown reason.")
-public func _follow(_ target: String, credentials: OAuthCredentials) async throws -> FollowingRequestResult {
+public func follow(userID: String, credentials: OAuthCredentials) async throws -> FollowingRequestResult {
     var request = authorizedRequest(
         endpoint: "https://api.twitter.com/2/users/\(credentials.user_id)/following",
         method: .POST,
@@ -31,7 +37,7 @@ public func _follow(_ target: String, credentials: OAuthCredentials) async throw
     request.setValue("application/json", forHTTPHeaderField: "content-type")
     
     request.httpBody = Data(#"""
-        {"target_user_id":"\#(target)"}
+        {"target_user_id":"\#(userID)"}
         """#.utf8)
     
     let (data, response): (Data, URLResponse) = try await URLSession.shared.upload(for: request, from: Data.init(), delegate: nil)
