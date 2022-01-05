@@ -91,7 +91,7 @@ internal func authorizedRequest(
     parameters: RequestParameters
 ) -> URLRequest {
     let parameterDict = signedParameters(
-        method: .GET,
+        method: method,
         url: endpoint,
         credentials: credentials,
         parameters: parameters
