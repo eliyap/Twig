@@ -20,6 +20,8 @@ public enum TwigError: Error {
     case invalidRequestResponse
     
     case malformedJSON
+    
+    case badStatusCode(code: Int)
 }
 
 public enum HTTPMethod: String {

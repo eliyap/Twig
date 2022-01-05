@@ -24,12 +24,18 @@ public struct FollowingRequestResult: Codable {
 }
 
 public func follow(_ target: String, credentials: OAuthCredentials) async throws -> FollowingRequestResult {
-    let request = authorizedRequest(
+    var request = authorizedRequest(
         endpoint: "https://api.twitter.com/2/users/\(credentials.user_id)/following",
         method: .POST,
         credentials: credentials,
         parameters: RequestParameters.empty
     )
+    
+    /// To ensure that our request is always sent, ignore local cache data.
+    /// Source: https://www.swiftbysundell.com/articles/http-post-and-file-upload-requests-using-urlsession/
+    request.cachePolicy = .reloadIgnoringLocalCacheData
+    request.setValue("application/json", forHTTPHeaderField: "content-type")
+    
     let body = try JSONEncoder().encode(["target_user_id": target])
     
     let (data, response): (Data, URLResponse) = try await URLSession.shared.upload(for: request, from: body, delegate: nil)
@@ -41,6 +47,7 @@ public func follow(_ target: String, credentials: OAuthCredentials) async throws
             let dict: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
             Swift.debugPrint(dict as Any)
             #endif
+            throw TwigError.badStatusCode(code: response.statusCode)
         }
     }
     
