@@ -7,7 +7,16 @@
 
 import Foundation
 
-public func unfollow(userID: String, credentials: OAuthCredentials) async throws -> Void {
+fileprivate struct UnfollowRequestResponse: Codable {
+    let data: UnfollowRequestResult
+}
+
+fileprivate struct UnfollowRequestResult: Codable {
+    let following: Bool
+}
+
+/// - Returns: whether the user is being followed (should be `false`).
+public func unfollow(userID: String, credentials: OAuthCredentials) async throws -> Bool {
     let request = authorizedRequest(
         endpoint: "https://api.twitter.com/2/users/\(credentials.user_id)/following/\(userID)",
         method: .DELETE,
@@ -33,5 +42,7 @@ public func unfollow(userID: String, credentials: OAuthCredentials) async throws
         }
     }
     
-    /// Never reached.
+    let blob = try JSONDecoder().decode(UnfollowRequestResponse.self, from: data)
+    return blob.data.following
+    
 }
