@@ -7,8 +7,9 @@
 
 import Foundation
 
+@available(*, deprecated, message: "Do not use, consistently returns 403 for unknown reason.")
 public func unfollow(_ target: String, credentials: OAuthCredentials) async throws -> Void {
-    var request = authorizedRequest(
+    let request = authorizedRequest(
         endpoint: "https://api.twitter.com/2/users/\(credentials.user_id)/following/\(target)",
         method: .DELETE,
         credentials: credentials,
@@ -19,8 +20,6 @@ public func unfollow(_ target: String, credentials: OAuthCredentials) async thro
             "oauth_token_secret": credentials.oauth_token_secret,
         ])
     )
-    
-    Swift.debugPrint(request.url?.absoluteString)
     
     let (data, response): (Data, URLResponse) = try await URLSession.shared.upload(for: request, from: Data.init(), delegate: nil)
     if let response = response as? HTTPURLResponse {
@@ -35,5 +34,5 @@ public func unfollow(_ target: String, credentials: OAuthCredentials) async thro
         }
     }
     
-    print("Succeeded")
+    /// Never reached.
 }

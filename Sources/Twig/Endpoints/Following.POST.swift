@@ -23,6 +23,7 @@ public struct FollowingRequestResult: Codable {
     public let pending_follow: Bool
 }
 
+@available(*, deprecated, message: "Do not use, consistently returns 403 for unknown reason.")
 public func follow(_ target: String, credentials: OAuthCredentials) async throws -> FollowingRequestResult {
     var request = authorizedRequest(
         endpoint: "https://api.twitter.com/2/users/\(credentials.user_id)/following",
@@ -31,15 +32,11 @@ public func follow(_ target: String, credentials: OAuthCredentials) async throws
         parameters: RequestParameters.empty
     )
     
-    Swift.debugPrint("user id \(credentials.user_id)")
-    Swift.debugPrint("target \(target)")
-    
     /// To ensure that our request is always sent, ignore local cache data.
     /// Source: https://www.swiftbysundell.com/articles/http-post-and-file-upload-requests-using-urlsession/
     request.cachePolicy = .reloadIgnoringLocalCacheData
     request.setValue("application/json", forHTTPHeaderField: "content-type")
     
-//    let body = try JSONEncoder().encode(["target_user_id": target])
     request.httpBody = Data(#"""
         {"target_user_id":"\#(target)"}
         """#.utf8)
