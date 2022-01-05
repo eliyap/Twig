@@ -7,9 +7,9 @@
 
 import Foundation
 
-public func unfollow(_ target: String, credentials: OAuthCredentials) async throws -> Void {
+public func unfollow(userID: String, credentials: OAuthCredentials) async throws -> Void {
     let request = authorizedRequest(
-        endpoint: "https://api.twitter.com/2/users/\(credentials.user_id)/following/\(target)",
+        endpoint: "https://api.twitter.com/2/users/\(credentials.user_id)/following/\(userID)",
         method: .DELETE,
         credentials: credentials,
         parameters: RequestParameters(encodable: [
