@@ -27,7 +27,7 @@ public func hydratedTweets(
     let endpoint = "https://api.twitter.com/2/tweets"
     var ids = ids
     if ids.count > TweetEndpoint.maxResults {
-        Swift.debugPrint("⚠️ WARNING: DISCARDING IDS OVER \(TweetEndpoint.maxResults)!")
+        TwigLog.error("DISCARDING IDS OVER \(TweetEndpoint.maxResults)!")
         ids = Array(ids[..<TweetEndpoint.maxResults])
     }
     
@@ -49,7 +49,7 @@ public func hydratedTweets(
     if let response = response as? HTTPURLResponse {
         if 200..<300 ~= response.statusCode { /* ok! */}
         else {
-            Swift.debugPrint("Tweet request returned with status code \(response.statusCode)")
+            TwigLog.error("Tweet request returned with status code \(response.statusCode)")
             let dict: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
             Swift.debugPrint(dict as Any)
         }
@@ -72,9 +72,9 @@ public func hydratedTweets(
     var tweets: [RawHydratedTweet]
     if let data = blob.data {
         tweets = data.compactMap(\.item)
-        Swift.debugPrint("All media keys", tweets.compactMap(\.attachments?.media_keys).flatMap { $0 }.sorted())
+        TwigLog.debug("All media keys: \(tweets.compactMap(\.attachments?.media_keys).flatMap { $0 }.sorted())", print: false, true)
     } else {
-        Swift.debugPrint("No data returned for hydrated tweets.")
+        TwigLog.debug("No data returned for hydrated tweets.", print: false, true)
         tweets = []
     }
     let includedTweets = blob.includes?.tweets?.compactMap(\.item) ?? []
@@ -91,7 +91,7 @@ internal func authorizedRequest(
     parameters: RequestParameters
 ) -> URLRequest {
     let parameterDict = signedParameters(
-        method: .GET,
+        method: method,
         url: endpoint,
         credentials: credentials,
         parameters: parameters

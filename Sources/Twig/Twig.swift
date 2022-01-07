@@ -20,11 +20,14 @@ public enum TwigError: Error {
     case invalidRequestResponse
     
     case malformedJSON
+    
+    case badStatusCode(code: Int)
 }
 
 public enum HTTPMethod: String {
     case GET
     case POST
+    case DELETE
 }
 
 extension URLRequest {

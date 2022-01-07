@@ -27,10 +27,24 @@ public protocol ReplyIdentifiable {
     var replyID: String? { get }
 }
 
-extension RawHydratedTweet: ReplyIdentifiable { }
+extension RawHydratedTweet: ReplyIdentifiable {
+    public var replyID: String? {
+        referenced_tweets?.first(where: {$0.type == .replied_to})?.id
+    }
+}
 
 public protocol TweetIdentifiable {
     var id: String { get }
 }
 
 extension RawHydratedTweet: TweetIdentifiable { }
+
+public protocol RetweetIdentifiable {
+    var retweetID: String? { get }
+}
+
+extension RawHydratedTweet: RetweetIdentifiable {
+    public var retweetID: String? {
+        referenced_tweets?.first(where: {$0.type == .retweeted})?.id
+    }
+}

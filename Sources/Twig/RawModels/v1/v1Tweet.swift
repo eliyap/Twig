@@ -11,7 +11,7 @@ import Foundation
     Names and types mirror the documented API, to allow for synthesized `Codable` conformance.
  */
 public struct RawV1Tweet: Codable {
-    public let created_at: String
+    public let created_at: Date
     public let id: Int64
     public let id_str: String
     public let text: String

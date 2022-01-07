@@ -13,7 +13,10 @@ public func timeline(credentials: OAuthCredentials, sinceID: String?, maxID: Str
     let request = timelineRequest(credentials: credentials, sinceID: sinceID, maxID: maxID)
     let (data, response): (Data, URLResponse) = try await URLSession.shared.data(for: request, delegate: nil)
     do {
-        return try decodeFailableArray(from: data)
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(.v1dot1Format)
+        let blob = try decoder.decode([Failable<RawV1Tweet>].self, from: data)
+        return blob.compactMap(\.item)
     } catch {
         Swift.debugPrint("Failed to fetch v1.1 timeline.")
         if let response = response as? HTTPURLResponse {
@@ -21,14 +24,6 @@ public func timeline(credentials: OAuthCredentials, sinceID: String?, maxID: Str
         }
         return []
     }
-}
-
-/// Combine approach.
-public func timelinePublisher(credentials: OAuthCredentials, sinceID: String?, maxID: String?) -> AnyPublisher<[RawV1Tweet], Error> {
-    let request = timelineRequest(credentials: credentials, sinceID: sinceID, maxID: maxID)
-    return URLSession.shared.dataTaskPublisher(for: request)
-        .tryMap { (data, _) in try decodeFailableArray(from: data) }
-        .eraseToAnyPublisher()
 }
 
 // MARK: - Guts

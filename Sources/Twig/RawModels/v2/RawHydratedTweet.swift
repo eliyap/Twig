@@ -82,15 +82,3 @@ public struct RawPublicMetrics: Codable, Sendable {
     public let reply_count: Int
     public let retweet_count: Int
 }
-
-public extension RawHydratedTweet {
-    var replyID: String? {
-        referenced_tweets?.first(where: {$0.type == .replied_to})?.id
-    }
-}
-
-public extension RawHydratedTweet {
-    var retweetID: String? {
-        referenced_tweets?.first(where: {$0.type == .retweeted})?.id
-    }
-}
