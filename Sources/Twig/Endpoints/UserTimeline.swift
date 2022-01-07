@@ -20,7 +20,7 @@ internal struct RawUserTimelineMetadata: Decodable {
 /// The shape of data returned from the User Timeline endpoint.
 internal struct RawUserTimelineBlob: Decodable {
     let data: [Failable<RawHydratedTweet>]?
-    let meta: RawUserTimelineMetadata
+    let meta: RawUserTimelineMetadata?
     let includes: RawIncludes?
 }
 
@@ -63,7 +63,7 @@ public func userTimeline(
     let users: [RawUser] = blob.includes?.users?.compactMap(\.item) ?? []
     let media: [RawIncludeMedia] = blob.includes?.media?.compactMap(\.item) ?? []
     
-    return (tweets, included, users, media, blob.meta.next_token)
+    return (tweets, included, users, media, blob.meta?.next_token)
 }
 
 // MARK: - Guts
