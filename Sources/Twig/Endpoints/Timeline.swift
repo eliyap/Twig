@@ -23,14 +23,6 @@ public func timeline(credentials: OAuthCredentials, sinceID: String?, maxID: Str
     }
 }
 
-/// Combine approach.
-public func timelinePublisher(credentials: OAuthCredentials, sinceID: String?, maxID: String?) -> AnyPublisher<[RawV1Tweet], Error> {
-    let request = timelineRequest(credentials: credentials, sinceID: sinceID, maxID: maxID)
-    return URLSession.shared.dataTaskPublisher(for: request)
-        .tryMap { (data, _) in try decodeFailableArray(from: data) }
-        .eraseToAnyPublisher()
-}
-
 // MARK: - Guts
 /// Docs: https://developer.twitter.com/en/docs/twitter-api/v1/tweets/timelines/guides/working-with-timelines
 internal func timelineRequest(credentials: OAuthCredentials, sinceID: String?, maxID: String?) -> URLRequest {
