@@ -14,7 +14,7 @@ public func timeline(credentials: OAuthCredentials, sinceID: String?, maxID: Str
     let (data, response): (Data, URLResponse) = try await URLSession.shared.data(for: request, delegate: nil)
     do {
         let decoder = JSONDecoder()
-        decoder.dateDecodingStrategy = .formatted(.iso8601withFractionalSeconds)
+        decoder.dateDecodingStrategy = .formatted(.v1dot1Format)
         let blob = try decoder.decode([Failable<RawV1Tweet>].self, from: data)
         return blob.compactMap(\.item)
     } catch {
