@@ -51,7 +51,7 @@ public func hydratedTweets(
         else {
             let dict: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
             TwigLog.error("""
-                Tweet request returned with bad status code
+                \(#function) returned with bad status code
                 - code: \(response.statusCode)
                 - dict: \(dict as Any)
                 """)

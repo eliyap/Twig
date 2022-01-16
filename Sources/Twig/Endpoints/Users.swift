@@ -32,11 +32,15 @@ public func users(
     let request = userRequest(userIDs: userIDs, credentials: credentials)
     let (data, response): (Data, URLResponse) = try await URLSession.shared.data(for: request, delegate: nil)
     if let response = response as? HTTPURLResponse {
-        if 200..<300 ~= response.statusCode { /* ok! */ }
+        if 200..<300 ~= response.statusCode { /* ok! */}
         else {
-            Swift.debugPrint("Users request returned with status code \(response.statusCode)")
             let dict: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
-            Swift.debugPrint(dict as Any)
+            TwigLog.error("""
+                \(#function) returned with bad status code
+                - code: \(response.statusCode)
+                - dict: \(dict as Any)
+                """)
+            throw TwigError.badStatusCode(code: response.statusCode)
         }
     }
     
