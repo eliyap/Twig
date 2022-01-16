@@ -40,7 +40,7 @@ public func follow(userID: String, credentials: OAuthCredentials) async throws -
     
     let (data, response): (Data, URLResponse) = try await URLSession.shared.upload(for: request, from: body, delegate: nil)
     if let response = response as? HTTPURLResponse {
-        if 200..<300 ~= response.statusCode { /* ok! */}
+        if 200..<300 ~= response.statusCode { /* ok! */ }
         else {
             let dict: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
             TwigLog.error("""
