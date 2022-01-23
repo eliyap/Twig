@@ -53,7 +53,7 @@ public func users(
     } catch {
         #if DEBUG
         let dict: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
-        print(dict as Any)
+        Swift.debugPrint(dict as Any)
         #endif
         throw TwigError.malformedJSON
     }
