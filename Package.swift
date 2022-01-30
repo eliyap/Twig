@@ -29,7 +29,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Collections", package: "swift-collections")
             ],
-            exclude: ["Int64 Tech Note.md"]),
+            exclude: ["RawModels/Int64 Tech Note.md"]),
         .testTarget(
             name: "TwigTests",
             dependencies: ["Twig"]),
