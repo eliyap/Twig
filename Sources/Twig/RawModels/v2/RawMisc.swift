@@ -7,14 +7,14 @@
 
 import Foundation
 
-public struct RawCoordinates: Codable {
+public struct RawCoordinates: Codable, Sendable {
     /// Incomplete...
 }
 
-public struct RawPlace: Codable {
+public struct RawPlace: Codable, Sendable {
     /// Incomplete...
 }
 
-public struct RawExtendedEntities: Codable {
+public struct RawExtendedEntities: Codable, Sendable {
     /// Incomplete...
 }

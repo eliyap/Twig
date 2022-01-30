@@ -34,9 +34,13 @@ public func users(
     if let response = response as? HTTPURLResponse {
         if 200..<300 ~= response.statusCode { /* ok! */ }
         else {
-            Swift.debugPrint("Users request returned with status code \(response.statusCode)")
             let dict: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
-            Swift.debugPrint(dict as Any)
+            TwigLog.error("""
+                \(#function) returned with bad status code
+                - code: \(response.statusCode)
+                - dict: \(dict as Any)
+                """)
+            throw TwigError.badStatusCode(code: response.statusCode)
         }
     }
     
@@ -49,7 +53,7 @@ public func users(
     } catch {
         #if DEBUG
         let dict: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
-        print(dict as Any)
+        Swift.debugPrint(dict as Any)
         #endif
         throw TwigError.malformedJSON
     }

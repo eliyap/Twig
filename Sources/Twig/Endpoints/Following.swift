@@ -36,9 +36,15 @@ public func requestFollowing(credentials: OAuthCredentials) async throws -> Set<
         let (data, response): (Data, URLResponse) = try await URLSession.shared.data(for: request, delegate: nil)
         
         if let response = response as? HTTPURLResponse {
-            if 200..<300 ~= response.statusCode { /* ok! */}
+            if 200..<300 ~= response.statusCode { /* ok! */ }
             else {
-                Swift.debugPrint("Following request returned with status code \(response.statusCode)")
+                let dict: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
+                TwigLog.error("""
+                    \(#function) returned with bad status code
+                    - code: \(response.statusCode)
+                    - dict: \(dict as Any)
+                    """)
+                throw TwigError.badStatusCode(code: response.statusCode)
             }
         }
         

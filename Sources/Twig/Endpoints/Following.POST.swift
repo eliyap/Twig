@@ -42,11 +42,12 @@ public func follow(userID: String, credentials: OAuthCredentials) async throws -
     if let response = response as? HTTPURLResponse {
         if 200..<300 ~= response.statusCode { /* ok! */ }
         else {
-            #if DEBUG
-            Swift.debugPrint("Follow request returned with status code \(response.statusCode)")
             let dict: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
-            Swift.debugPrint(dict as Any)
-            #endif
+            TwigLog.error("""
+                \(#function) returned with bad status code
+                - code: \(response.statusCode)
+                - dict: \(dict as Any)
+                """)
             throw TwigError.badStatusCode(code: response.statusCode)
         }
     }

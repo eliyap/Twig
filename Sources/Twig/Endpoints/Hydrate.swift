@@ -47,11 +47,15 @@ public func hydratedTweets(
     let (data, response) = try await URLSession.shared.data(for: request, delegate: nil)
 
     if let response = response as? HTTPURLResponse {
-        if 200..<300 ~= response.statusCode { /* ok! */}
+        if 200..<300 ~= response.statusCode { /* ok! */ }
         else {
-            TwigLog.error("Tweet request returned with status code \(response.statusCode)")
             let dict: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
-            Swift.debugPrint(dict as Any)
+            TwigLog.error("""
+                \(#function) returned with bad status code
+                - code: \(response.statusCode)
+                - dict: \(dict as Any)
+                """)
+            throw TwigError.badStatusCode(code: response.statusCode)
         }
     }
     
@@ -64,7 +68,7 @@ public func hydratedTweets(
     } catch {
         #if DEBUG
         let dict: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
-        print(dict as Any)
+        Swift.debugPrint(dict as Any)
         #endif
         throw TwigError.malformedJSON
     }
