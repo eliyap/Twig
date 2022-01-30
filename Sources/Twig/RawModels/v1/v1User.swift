@@ -8,8 +8,8 @@
 import Foundation
 
 /// Docs: https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/user
-public struct RawV1User: Codable, Hashable {
-    public let id: Int64
+public struct RawV1User: Codable, Hashable, Sendable {
+    public let id: Int
     public let id_str: String
     
     /// Displayed name.
