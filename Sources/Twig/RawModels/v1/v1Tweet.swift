@@ -72,9 +72,9 @@ public struct RawV1Tweet: Codable {
  A partial Tweet model, representing quoted tweets and retweets,
  to work around Swift's restriction on recursive data structures.
  */
-public struct SkeletonTweet: Codable {
+public struct SkeletonTweet: Codable, Sendable {
     public let created_at: String
-    public let id: Int64
+    public let id: Int
     public let id_str: String
     public let text: String
     public let source: String
