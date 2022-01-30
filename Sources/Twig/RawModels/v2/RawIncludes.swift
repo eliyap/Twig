@@ -13,7 +13,7 @@ internal struct RawIncludes: Decodable {
     public let media: [Failable<RawIncludeMedia>]?
 }
 
-public struct RawIncludeMedia: Decodable, Hashable, Sendable {
+public struct RawIncludeMedia: Decodable, Hashable {
     public let media_key: String
     
     public let type: RawIncludeMediaType
@@ -30,7 +30,7 @@ public struct RawIncludeMedia: Decodable, Hashable, Sendable {
     public let url: String?
 }
 
-public enum RawIncludeMediaType: String, Decodable, Hashable, Sendable {
+public enum RawIncludeMediaType: String, Decodable, Hashable {
     case photo
     case animated_gif
     case video

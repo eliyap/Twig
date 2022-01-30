@@ -59,24 +59,24 @@ public struct RawHydratedTweet: Codable {
     ]
 }
 
-public struct RawAttachments: Codable, Sendable, Hashable {
+public struct RawAttachments: Codable, Hashable {
     /// - Note: array order reflects the intended image album order.
     public let media_keys: [String]?
     public let poll_ids: [String]?
 }
 
-public struct RawReferencedTweet: Codable, Sendable {
+public struct RawReferencedTweet: Codable {
     public let id: String
     public let type: RawReferenceType
 }
 
-public enum RawReferenceType: String, Codable, Sendable {
+public enum RawReferenceType: String, Codable {
     case retweeted
     case replied_to
     case quoted
 }
 
-public struct RawPublicMetrics: Codable, Sendable {
+public struct RawPublicMetrics: Codable {
     public let like_count: Int
     public let quote_count: Int
     public let reply_count: Int
