@@ -1,6 +1,6 @@
 import Foundation
 
-public struct RawV1Entities: Codable {
+public struct RawV1Entities: Codable, Sendable {
     public let symbols: [RawV1Tag]
     public let hashtags: [RawV1Tag]
     public let user_mentions: [RawV1Mention]
