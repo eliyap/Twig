@@ -7,12 +7,12 @@ public struct RawV1Entities: Codable {
     public let urls: [RawV1Url]
 }
 
-public struct RawV1Tag: Codable {
+public struct RawV1Tag: Codable, Sendable {
     public let indices: [Int]
     public let text: String
 }
 
-public struct RawV1Url: Codable {
+public struct RawV1Url: Codable, Sendable {
     public let indices: [Int]
     public let url: String
     public let expanded_url: String
