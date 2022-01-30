@@ -12,16 +12,16 @@ import Foundation
  */
 public struct RawV1Tweet: Codable {
     public let created_at: Date
-    public let id: Int64
+    public let id: Int
     public let id_str: String
     public let text: String
     public let source: String
     public let truncated: Bool
     
     /// Replies
-    public let in_reply_to_status_id: Int64?
+    public let in_reply_to_status_id: Int?
     public let in_reply_to_status_id_str: String?
-    public let in_reply_to_user_id: Int64?
+    public let in_reply_to_user_id: Int?
     public let in_reply_to_user_id_str: String?
     public let in_reply_to_screen_name: String?
     
@@ -32,7 +32,7 @@ public struct RawV1Tweet: Codable {
     public let place: RawPlace?
     
     /// Quotes
-    public let quoted_status_id: Int64?
+    public let quoted_status_id: Int?
     public let quoted_status_id_str: String?
     public let is_quote_status: Bool
     public let quoted_status: SkeletonTweet?
