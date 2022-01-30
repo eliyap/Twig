@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct OAuthCredentials {
+public struct OAuthCredentials: Sendable {
     public let oauth_token: String
     public let oauth_token_secret: String
     public let user_id: Int
