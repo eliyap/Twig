@@ -19,9 +19,9 @@ public struct RawV1Url: Codable {
     public let display_url: String
 }
 
-public struct RawV1Mention: Codable {
+public struct RawV1Mention: Codable, Sendable {
     public let indices: [Int]
-    public let id: Int64
+    public let id: Int
     public let id_str: String
     public let name: String
     public let screen_name: String
