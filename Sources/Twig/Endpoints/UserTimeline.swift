@@ -8,8 +8,6 @@
 import Combine
 import Foundation
 
-fileprivate let DEBUG_DUMP_JSON = false
-
 internal struct RawUserTimelineMetadata: Decodable {
     let newest_id: String?
     let next_token: String?
@@ -39,11 +37,6 @@ public func userTimeline(
         nextToken: nextToken
     )
     let (data, response): (Data, URLResponse) = try await URLSession.shared.data(for: request, delegate: nil)
-    
-    if DEBUG_DUMP_JSON {
-        let dict: [String: Any]? = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] ?? [:]
-        print(dict as Any)
-    }
     
     /// Check and discard response.
     if let response = response as? HTTPURLResponse {
