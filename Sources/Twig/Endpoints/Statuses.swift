@@ -27,7 +27,7 @@ public enum StatusesEndpoint {
     public static let maxCount = 100
 }
 
-public func requestv11Statuses(credentials: OAuthCredentials, ids: [String]) async throws -> [RawV1MediaTweet] {
+public func requestMedia(credentials: OAuthCredentials, ids: [String]) async throws -> [RawV1MediaTweet] {
     let decoder = JSONDecoder()
     decoder.dateDecodingStrategy = .formatted(.v1dot1Format)
     
