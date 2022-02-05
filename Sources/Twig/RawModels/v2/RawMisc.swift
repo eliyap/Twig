@@ -16,33 +16,33 @@ public struct RawPlace: Codable, Sendable {
 }
 
 public struct RawExtendedEntities: Codable, Sendable {
-    let media: [RawExtendedMedia]
+    public let media: [RawExtendedMedia]
 }
 
 public struct RawExtendedMedia: Codable, Sendable {
-    let id_str: String
+    public let id_str: String
     
-    let media_url: String
-    let media_url_https: String
-    let url: String
-    let display_url: String
-    let expanded_url: String
+    public let media_url: String
+    public let media_url_https: String
+    public let url: String
+    public let display_url: String
+    public let expanded_url: String
     
-    let type: RawIncludeMediaType
-    let video_info: RawVideoInfo
+    public let type: RawIncludeMediaType
+    public let video_info: RawVideoInfo
 }
 
 public struct RawMediaSizes: Codable, Sendable {
-    let thumb: RawMediaSize
-    let small: RawMediaSize
-    let medium: RawMediaSize
-    let large: RawMediaSize
+    public let thumb: RawMediaSize
+    public let small: RawMediaSize
+    public let medium: RawMediaSize
+    public let large: RawMediaSize
 }
 
 public struct RawMediaSize: Codable, Sendable {
-    let w: Int
-    let h: Int
-    let resize: RawResize
+    public let w: Int
+    public let h: Int
+    public let resize: RawResize
 }
 
 public enum RawResize: String, Codable, Hashable, Sendable {
@@ -50,18 +50,18 @@ public enum RawResize: String, Codable, Hashable, Sendable {
 }
 
 public struct RawVideoInfo: Codable, Sendable {
-    let aspect_ratio: [Int]
+    public let aspect_ratio: [Int]
     
     /// Undocumented optional.
-    let duration_millis: Int?
+    public let duration_millis: Int?
     
-    let variants: [RawMediaVariant]
+    public let variants: [RawMediaVariant]
 }
 
 public struct RawMediaVariant: Codable, Sendable {
     /// - Note: Bitrate is not present on formats such as `m3u8`.
     ///         https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/extended-entities#tweet-video
-    let bitrate: Int?
-    let content_type: RawIncludeContentType
-    let url: String
+    public let bitrate: Int?
+    public let content_type: RawIncludeContentType
+    public let url: String
 }

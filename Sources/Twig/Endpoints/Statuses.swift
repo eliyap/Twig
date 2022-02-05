@@ -9,12 +9,12 @@ import Foundation
 
 /// A structure focused on receiving videos and GIFs.
 public struct RawV1MediaTweet: Decodable, Sendable {
-    let id_str: String
-    let extended_entities: RawExtendedEntities?
+    public let id_str: String
+    public let extended_entities: RawExtendedEntities?
     
     /// Optionally grab some metrics for opportunistic updating.
-    let favorite_count: Int?
-    let retweet_count: Int?
+    public let favorite_count: Int?
+    public let retweet_count: Int?
 }
 
 public enum StatusesEndpoint {
