@@ -42,6 +42,4 @@ public func _follow(
             throw TwigError.badStatusCode(code: response.statusCode)
         }
     }
-    
-    print("OK!")
 }
