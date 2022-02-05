@@ -9,7 +9,12 @@ import Foundation
 
 /// A structure focused on receiving videos and GIFs.
 public struct RawV1MediaTweet: Decodable, Sendable {
+    let id_str: String
     let extended_entities: RawExtendedEntities?
+    
+    /// Optionally grab some metrics for opportunistic updating.
+    let favorite_count: Int?
+    let retweet_count: Int?
 }
 
 public enum StatusesEndpoint {
@@ -22,7 +27,7 @@ public enum StatusesEndpoint {
     public static let maxCount = 100
 }
 
-public func requestv11Statuses(credentials: OAuthCredentials, ids: [String]) async throws -> Void {
+public func requestv11Statuses(credentials: OAuthCredentials, ids: [String]) async throws -> [RawV1MediaTweet] {
     let decoder = JSONDecoder()
     decoder.dateDecodingStrategy = .formatted(.v1dot1Format)
     
@@ -53,7 +58,10 @@ public func requestv11Statuses(credentials: OAuthCredentials, ids: [String]) asy
     }
     
     let blob = try decoder.decode([Failable<RawV1MediaTweet>].self, from: data)
-//    return blob.compactMap(\.item).map({RawV1TweetSendable($0)})
-    
-    
+    let tweets = blob.compactMap(\.item)
+    if tweets.count < blob.count {
+        assert(false)
+        TwigLog.error("Failed to decode in \(#function)")
+    }
+    return tweets
 }
