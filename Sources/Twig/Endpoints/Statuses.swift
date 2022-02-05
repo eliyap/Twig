@@ -52,9 +52,6 @@ public func requestv11Statuses(credentials: OAuthCredentials, ids: [String]) asy
         }
     }
     
-    let dict: [Any] = try! JSONSerialization.jsonObject(with: data, options: []) as? [Any] ?? []
-    print(dict)
-    
     let blob = try decoder.decode([Failable<RawV1MediaTweet>].self, from: data)
 //    return blob.compactMap(\.item).map({RawV1TweetSendable($0)})
     
