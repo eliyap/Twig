@@ -13,7 +13,7 @@ public enum TweetEndpoint {
     internal static let url = "https://api.twitter.com/2/tweets"
     
     /// We may request a maximum of 100 tweets per page.
-    /// Docs: https://developer.twitter.com/en/docs/twitter-api/tweets/timelines/api-reference/get-users-id-tweets
+    /// Docs: https://developer.twitter.com/en/docs/twitter-api/tweets/lookup/api-reference/get-tweets
     public static let maxResults = 100
 }
 
