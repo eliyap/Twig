@@ -51,7 +51,10 @@ public enum RawResize: String, Codable, Hashable, Sendable {
 
 public struct RawVideoInfo: Codable, Sendable {
     let aspect_ratio: [Int]
-    let duration_millis: Int
+    
+    /// Undocumented optional.
+    let duration_millis: Int?
+    
     let variants: [RawMediaVariant]
 }
 
