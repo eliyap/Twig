@@ -14,6 +14,9 @@ public struct RawV1MediaTweet: Decodable, Sendable {
 
 public enum StatusesEndpoint {
     public static let baseURL = "https://api.twitter.com/1.1/statuses/lookup.json"
+    /// Docs: https://developer.twitter.com/en/docs/twitter-api/v1/tweets/post-and-engage/api-reference/get-statuses-lookup
+    /// Limited to 900 requests / 15 min.
+    public static let interval: TimeInterval = (15.0 * 60) / 900
 }
 
 public func requestv11Statuses(credentials: OAuthCredentials, ids: [String]) async throws -> Void {
