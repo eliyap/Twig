@@ -29,7 +29,9 @@ public struct RawExtendedMedia: Codable, Sendable {
     public let expanded_url: String
     
     public let type: RawIncludeMediaType
-    public let video_info: RawVideoInfo
+    
+    /// Not present when media is a `photo`.
+    public let video_info: RawVideoInfo?
 }
 
 public struct RawMediaSizes: Codable, Sendable {
