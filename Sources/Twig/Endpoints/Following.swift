@@ -11,7 +11,9 @@ public enum FollowingEndpoint {
     public static var staleTimer: TimeInterval { 90 }
     
     internal struct Response: Decodable {
-        let data: [RawUser]
+        /// Data is `nil` when the user does not follow anyone.
+        let data: [RawUser]?
+        
         let meta: Meta
         
         /// With apologies to Mark Zuckerberg.
@@ -20,7 +22,6 @@ public enum FollowingEndpoint {
             let next_token: String?
         }
     }
-
 }
 
 /// Get all users this user follows.
@@ -49,7 +50,10 @@ public func requestFollowing(credentials: OAuthCredentials) async throws -> Set<
         }
         
         let items = try decoder.decode(FollowingEndpoint.Response.self, from: data)
-        users.formUnion(items.data)
+        
+        /// - Note: `data` is `nil` when user does not follow anyone.
+        users.formUnion(items.data ?? [])
+        
         paginationToken = items.meta.next_token
     } while (paginationToken != nil)
      
