@@ -32,6 +32,8 @@ public struct RawExtendedMedia: Codable, Sendable {
     
     /// Not present when media is a `photo`.
     public let video_info: RawVideoInfo?
+    
+    public let additional_media_info: RawAdditionalMediaInfo?
 }
 
 public struct RawMediaSizes: Codable, Sendable {
@@ -58,6 +60,20 @@ public struct RawVideoInfo: Codable, Sendable {
     public let duration_millis: Int?
     
     public let variants: [RawMediaVariant]
+}
+
+/// Docs: https://developer.twitter.com/en/docs/twitter-api/v1/data-dictionary/object-model/extended-entities
+public struct RawAdditionalMediaInfo: Codable, Sendable {
+    /// Undocumented `nil`.
+    let title: String?
+    
+    /// Undocumented `nil`.
+    let description: String?
+    
+    /// Undocumented `nil`.
+    let embeddable: Bool?
+    
+    let monetizable: Bool
 }
 
 public struct RawMediaVariant: Codable, Sendable {
