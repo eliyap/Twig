@@ -30,8 +30,13 @@ public struct RawIncludeMedia: Decodable, Hashable {
     public let url: String?
 }
 
-public enum RawIncludeMediaType: String, Decodable, Hashable {
+public enum RawIncludeMediaType: String, Codable, Hashable, Sendable {
     case photo
     case animated_gif
     case video
+}
+
+public enum RawIncludeContentType: String, Codable, Sendable {
+    case video_mp4 = "video/mp4"
+    case application_x_mpegURL = "application/x-mpegURL"
 }

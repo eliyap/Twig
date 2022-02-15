@@ -27,7 +27,8 @@ let package = Package(
         .target(
             name: "Twig",
             dependencies: [
-                .product(name: "Collections", package: "swift-collections")
+                .product(name: "Collections", package: "swift-collections"),
+                .product(name: "BlackBox", package: "BlackBox"),
             ],
             exclude: ["RawModels/Int64 Tech Note.md"]),
         .testTarget(

@@ -1,17 +1,6 @@
 import Foundation
 import Combine
 
-internal struct RawFollowingResponse: Decodable {
-    let data: [RawUser]
-    let meta: Meta
-    
-    /// With apologies to Mark Zuckerberg.
-    internal struct Meta: Decodable {
-        /// Pagination token for the next page of results.
-        let next_token: String?
-    }
-}
-
 /// Shell enum for information about the "Following" endpoint.
 public enum FollowingEndpoint {
     /** Fetches are limited to ~1/min. Therefore, only declare data stale after 90s.
@@ -21,6 +10,18 @@ public enum FollowingEndpoint {
      */
     public static var staleTimer: TimeInterval { 90 }
     
+    internal struct Response: Decodable {
+        /// Data is `nil` when the user does not follow anyone.
+        let data: [RawUser]?
+        
+        let meta: Meta
+        
+        /// With apologies to Mark Zuckerberg.
+        internal struct Meta: Decodable {
+            /// Pagination token for the next page of results.
+            let next_token: String?
+        }
+    }
 }
 
 /// Get all users this user follows.
@@ -48,8 +49,11 @@ public func requestFollowing(credentials: OAuthCredentials) async throws -> Set<
             }
         }
         
-        let items = try decoder.decode(RawFollowingResponse.self, from: data)
-        users.formUnion(items.data)
+        let items = try decoder.decode(FollowingEndpoint.Response.self, from: data)
+        
+        /// - Note: `data` is `nil` when user does not follow anyone.
+        users.formUnion(items.data ?? [])
+        
         paginationToken = items.meta.next_token
     } while (paginationToken != nil)
      
